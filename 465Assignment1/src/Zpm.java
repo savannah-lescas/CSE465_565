@@ -3,6 +3,9 @@
  * Dr. Amjad
  * Comparative Programming Languages
  * 8 February 2024
+ * A program that takes in a .zpm file from the command line. In the .zpm file
+ * there are Z+- commands. The program takes the commands from the file 
+ * and processes/interprets them. 
  */
 
 import java.util.ArrayList;
