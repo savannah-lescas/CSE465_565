@@ -169,6 +169,8 @@ public class Zpm {
 					variables.put(variableName, leftInt * rightInt);
 				} else if (operator.equals("-=")) {
 					variables.put(variableName, leftInt - rightInt);
+				} else {
+					throw new Exception("RUNTIME ERROR: line " + lineNumber);
 				}
 			}
 		// if the variable is not initialized already, give a runtime error
@@ -231,7 +233,7 @@ public class Zpm {
 	private static boolean checkVarName(String varName) {
 		for (int i = 0; i < varName.length(); i++) {
 			if (!(varName.charAt(i) >= 'A' && varName.charAt(i) <= 'Z') 
-					&& !(varName.charAt(i) >= 'a' && varName.charAt(i) <= 'z')) {
+					|| varName.length() > 1) {
 				return false;
 			}
 		}
