@@ -19,15 +19,17 @@ public class Zpm {
 	private static HashMap<String, Object> variables = new HashMap<>();
 	private static int lineNumber = 0;
 	
-	public static void main(String[] args) throws Exception{
+	public static void main(String[] args){
 		// check if a filename is one of the arguments
 		if (args.length == 0)  {
-			throw new Exception("Usage: java Zpm filename.zpm");
+			System.out.println("Usage: java Zpm filename.zpm");
+			System.exit(1);
 		}
 		String filename = args[0];
 		// make sure that it is a .zpm extension
 		if (!filename.endsWith(".zpm")) {
-			throw new Exception("File needs to have .zpm extension");
+			System.out.println("File needs to have .zpm extension");
+			System.exit(1);
 		}
 		File file = new File(filename);
 		try (Scanner scan = new Scanner(file)) {
@@ -77,20 +79,22 @@ public class Zpm {
 	 * A method that checks if the line is a variable assignment or a 
 	 * compound assignment and does the instruction respectively.
 	 */
-	public static void instruction(String[] input) throws Exception {
+	public static void instruction(String[] input) {
 		// if the second part of the input line is just "=" that means 
 		// it is a variable assignment
 		if (input[1].equals("=")) {
 			// makes sure the line is correctly syntaxed
 			if (input.length < 4 || input[2].equals(";")) {
-				throw new Exception("RUNTIME ERROR: line " + lineNumber);
+				System.out.println("RUNTIME ERROR: line " + lineNumber);
+				System.exit(1);
 			} else {
 				// check that the variable name has no numbers
 				if (checkVarName(input[0])) {
 					// if it is all good initialize it and put it into the hash map
 					initialize(input[0], input[1], input[2], input[3]);
 				} else {
-					throw new Exception("RUNTIME ERROR: line " + lineNumber);
+					System.out.println("RUNTIME ERROR: line " + lineNumber);
+					System.exit(1);
 				}
 			}
 		// if the second part of the input is not "=", it is a compound assignment
@@ -111,7 +115,8 @@ public class Zpm {
 	 * already exist in the hash map, add it to the map. If the variable is 
 	 * getting assigned to another variable's value change the variable's value.
 	 */
-	public static void initialize(String first, String second, String third, String fourth) {
+	public static void initialize(String first, String second,
+			String third, String fourth) {
 		// if the assignment is to a variable that exists, assign the
 		// variable to the value of the other variable
 		if (variables.containsKey(third)) {
@@ -144,7 +149,8 @@ public class Zpm {
 	/*
 	 * A method that does the compound assignments. 
 	 */
-	public static void compoundAssignments(String variableName, String operator, Object right) throws Exception {
+	public static void compoundAssignments(String variableName,
+			String operator, Object right) {
 		// checks if the variable has been initialized yet
 		if (variables.get(variableName) != null) {
 			String left = variables.get(variableName).toString();
@@ -155,8 +161,10 @@ public class Zpm {
 				}
 			// if the command is trying to add a string with an int
 			// it will be a runtime error
-			} else if (!isInt(left) && isInt(right.toString()) || isInt(left) && !isInt(right.toString())) {
-				throw new Exception("RUNTIME ERROR: line " + lineNumber);
+			} else if (!isInt(left) && isInt(right.toString())
+					|| isInt(left) && !isInt(right.toString())) {
+				System.out.println("RUNTIME ERROR: line " + lineNumber);
+				System.exit(1);
 			// if the compound assignment is with two integers, do the assignment
 			// and update the value in the map
 			} else {
@@ -170,12 +178,14 @@ public class Zpm {
 				} else if (operator.equals("-=")) {
 					variables.put(variableName, leftInt - rightInt);
 				} else {
-					throw new Exception("RUNTIME ERROR: line " + lineNumber);
+					System.out.println("RUNTIME ERROR: line " + lineNumber);
+					System.exit(1);
 				}
 			}
 		// if the variable is not initialized already, give a runtime error
 		} else {
-			throw new Exception("RUNTIME ERROR: line " + lineNumber);
+			System.out.println("RUNTIME ERROR: line " + lineNumber);
+			System.exit(1);
 		}
 	}
 	
