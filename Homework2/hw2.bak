@@ -26,13 +26,7 @@
 ; ================ Solve the following functions ===================
 ; Return a list with only the negatives items
 (define (negatives lst)
-	(if (null? lst)
-            '()
-            (if (<= (car lst) 0)
-                (cons (car lst) (negatives (cdr lst)))
-                (negatives (cdr lst))
-             )
-        )
+	lst
 )
 
 (line "negatives")
@@ -46,11 +40,7 @@
 ; Returns true if the two lists have identical structure
 ; in terms of how many elements and nested lists they have in the same order
 (define (struct lst1 lst2)
-	(if (equal? (length lst1) (length lst2))
-            ; figure out if there needs to be more here
-            #t
-            #f
-        )
+	#t
 )
 
 (line "struct")
@@ -63,20 +53,8 @@
 ; Returns a list of two numeric values. The first is the smallest
 ; in the list and the second is the largest in the list. 
 ; lst -- contains numeric values, and length is >= 1.
-(define (minelt lst)
-  (if (= 1 (length lst))
-      (car lst)
-      (min (car lst) (minelt (cdr lst)))
-   )
- )
-(define (maxelt lst)
-    (if (= 1 (length lst))
-         (car lst)
-         (max (car lst) (maxelt (cdr lst)))
-     )
- )
 (define (minAndMax lst)
-	(list (minelt lst) (maxelt lst))
+	'()
 )
 
 (line "minAndMax")
@@ -89,21 +67,8 @@
 ; that are inside nested loops taken out. So we want to flatten all elements and have
 ; them all in a single list. For example '(a (a a) a))) should become (a a a a)
 (define (flatten lst)
-	(if (null? lst)
-            '()
-            (if (list? (car lst))
-                
-                (cons (caar lst) (flatten (cdr lst)))
-                (cons (car lst) (flatten (cdr lst)))
-            )
-        )
+	'()
 )
-(display (car '(a (a a) a)))
-(newline)
-(display (caar '((a a) a)))
-(newline)
-(display (cdr '((a a) a)))
-(newline)
 
 (line "flatten")
 (mydisplay (flatten '(a b c)))  ; -> (a b c)
