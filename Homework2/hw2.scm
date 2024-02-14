@@ -26,10 +26,17 @@
 ; ================ Solve the following functions ===================
 ; Return a list with only the negatives items
 (define (negatives lst)
+        ; base case
 	(if (null? lst)
+            ; list is null
             '()
+            ; list is not null
             (if (<= (car lst) 0)
+                ; element is negative so add to list and
+                ; repeat with rest of list
                 (cons (car lst) (negatives (cdr lst)))
+                ; element is not negative so repeat with
+                ; rest of list
                 (negatives (cdr lst))
              )
         )
@@ -46,11 +53,42 @@
 ; Returns true if the two lists have identical structure
 ; in terms of how many elements and nested lists they have in the same order
 (define (struct lst1 lst2)
-	(if (equal? (length lst1) (length lst2))
-            ; figure out if there needs to be more here
-            #t
-            #f
+     (cond
+        ; the lists end up both empty at the end so they
+        ; are equal lengths
+	((and (null? lst1) (null? lst2))
+             #t
         )
+        ; the lists are not of equal length
+        ((or (null? lst1) (null? lst2))
+             #f
+        )
+        (else
+            (cond
+              ; if the elements are both lists
+              ((and (list? (car lst1)) (list? (car lst2)))
+                ; check if the length of the lists are equal
+                (if (= (length (car lst1)) (length (car lst2)))
+                    ; if they are equal go ahead and keep checking
+                    ; lst1 and lst2
+                    (struct (cdr lst1) (cdr lst2))
+                    ; if the inner lists are not equal return false
+                    #f
+                ))
+              ; if both elements are not lists
+              ((and (not (list? (car lst1))) (not (list? (car lst2))))
+                    ; continue checking the lists together as normal
+                    (struct (cdr lst1) (cdr lst2))
+               )
+              (else
+                    ; if one car is a list and the other is a single
+                    ; element the structure is not the same so return
+                    ; false
+                    #f
+               )
+            )
+        )
+     )
 )
 
 (line "struct")
@@ -63,12 +101,15 @@
 ; Returns a list of two numeric values. The first is the smallest
 ; in the list and the second is the largest in the list. 
 ; lst -- contains numeric values, and length is >= 1.
+
+; method to find the minimum
 (define (minelt lst)
   (if (= 1 (length lst))
       (car lst)
       (min (car lst) (minelt (cdr lst)))
    )
  )
+; method to find the maximum
 (define (maxelt lst)
     (if (= 1 (length lst))
          (car lst)
@@ -76,6 +117,8 @@
      )
  )
 (define (minAndMax lst)
+        ; use the other functions to find the minimum and
+        ; maximum and then make a list with them
 	(list (minelt lst) (maxelt lst))
 )
 
@@ -89,10 +132,16 @@
 ; that are inside nested loops taken out. So we want to flatten all elements and have
 ; them all in a single list. For example '(a (a a) a))) should become (a a a a)
 (define (flatten lst)
+        ; base case
 	(if (null? lst)
             '()
-            (if (list? (car lst))                
+            (if (list? (car lst))
+                ; if the element is a list, recursively go through
+                ; that list to see if it contains another list
+                ; then append it all and recursively flatten the
+                ; rest of the list
                 (append (flatten (car lst)) (flatten (cdr lst)))
+                ; otherwise just add the single element to the list
                 (cons (car lst) (flatten (cdr lst)))
             )
         )
