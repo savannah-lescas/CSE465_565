@@ -159,15 +159,28 @@
 ; The inputs '(1 2) and '(a b c) should return a single list:
 ; ((1 a) (1 b) (1 c) (2 a) (2 b) (2 c))
 ; lst1 & lst2 -- two flat lists.
+
+; helper method to do the pairings
+(define (pairElements leftelt lst2)
+  ; base case
+  (if (null? lst2)
+      '()
+      ; creates a list of the left element with the next
+      ; element of lst2 with recursion
+      (cons (list leftelt (car lst2))
+            (pairElements leftelt (cdr lst2)))
+  )
+)
 (define (crossproduct lst1 lst2)
+         ; base case
 	(if (or (null? lst1) (null? lst2))
-           
            lst1
-          (cons (list (car lst1) (car lst2)) ; Combine the first elements of each list into a pair and cons it
-            (crossproduct lst1 (cdr lst2))) ; Recursively call zip on the rest of the lists
+           ; add the pairs to the list by running the helper
+           ; method to get the correct products and using recursion
+           ; to do it for each element of the list
+           (append (pairElements (car lst1) lst2) (crossproduct (cdr lst1) lst2))
         )
 )
-
 (line "crossproduct")
 (mydisplay (crossproduct '(1 2) '(a b c)))
 (line "crossproduct")
@@ -180,11 +193,16 @@
 ; from the 'zipcodes.scm' file for this. You can just call 'zipcodes' directly
 ; as shown in the sample example
 (define (getLatLon zipcode zips)
-	(list zipcode (car zips))
+	;(list zipcode (car zips))
+        (if (= (caar zips) zipcode)
+            (append (cdr (cdddar zips)))
+            (getLatLon zipcode (cdr zips))
+        )
 )
 
 (line "getLatLon")
 (mydisplay (getLatLon 45056 zipcodes))
+(mydisplay (getLatLon 99553 zipcodes))
 (line "getLatLon")
 ; ---------------------------------------------
 
