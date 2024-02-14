@@ -160,7 +160,12 @@
 ; ((1 a) (1 b) (1 c) (2 a) (2 b) (2 c))
 ; lst1 & lst2 -- two flat lists.
 (define (crossproduct lst1 lst2)
-	'()
+	(if (or (null? lst1) (null? lst2))
+           
+           lst1
+          (cons (list (car lst1) (car lst2)) ; Combine the first elements of each list into a pair and cons it
+            (crossproduct lst1 (cdr lst2))) ; Recursively call zip on the rest of the lists
+        )
 )
 
 (line "crossproduct")
