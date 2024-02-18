@@ -49,7 +49,6 @@
 (mydisplay (negatives '(1 1 2 3 4 4 5)))  ; -> ()
 (line "negatives")
 ; ---------------------------------------------
-
 ; Returns true if the two lists have identical structure
 ; in terms of how many elements and nested lists they have in the same order
 (define (struct lst1 lst2)
@@ -59,36 +58,37 @@
 	((and (null? lst1) (null? lst2))
              #t
         )
-        ; the lists are not of equal length
+        ; lists are not of equal length
         ((or (null? lst1) (null? lst2))
              #f
         )
         (else
-            (cond
-              ; if the elements are both lists
-              ((and (list? (car lst1)) (list? (car lst2)))
-                ; check if the length of the lists are equal
-                (if (= (length (car lst1)) (length (car lst2)))
-                    ; if they are equal go ahead and keep checking
-                    ; lst1 and lst2
-                    (struct (cdr lst1) (cdr lst2))
-                    ; if the inner lists are not equal return false
-                    #f
+         (cond
+           ; if the elements are both lists
+           ((and (list? (car lst1)) (list? (car lst2)))
+            ; check if the length of the lists are equal
+            (if (= (length (car lst1)) (length (car lst2)))
+                ; if they are equal check the inner list for
+                ; more nested lists as well as check the rest
+                ; of the original list
+                (and (struct (car lst1) (car lst2)) (struct (cdr lst1) (cdr lst2)))
+                ; if the inner lists are not equal return false
+                #f
                 ))
-              ; if both elements are not lists
-              ((and (not (list? (car lst1))) (not (list? (car lst2))))
-                    ; continue checking the lists together as normal
-                    (struct (cdr lst1) (cdr lst2))
-               )
-              (else
-                    ; if one car is a list and the other is a single
-                    ; element the structure is not the same so return
-                    ; false
-                    #f
-               )
+           ; if both elements are not lists
+           ((and (not (list? (car lst1))) (not (list? (car lst2))))
+            ; continue checking the lists together as normal
+            (struct (cdr lst1) (cdr lst2))
             )
+           (else
+            ; if one car is a list and the other is a single
+            ; element the structure is not the same so return
+            ; false
+            #f
+            )
+           )
         )
-     )
+    )
 )
 
 (line "struct")
@@ -186,23 +186,30 @@
 (line "crossproduct")
 ; ---------------------------------------------
 
-; Returns all the latitude and longitude of particular zip code.
-; Returns the first lat/lon, if multiple entries have same zip code.
+; Return the first latitude and longitude of a particular zip code.
+; if there are multiple pairs for the same zip code, the function should
+; only return the first pair
 ; zipcode -- 5 digit integer
 ; zips -- the zipcode DB- You MUST pass the 'zipcodes' function
 ; from the 'zipcodes.scm' file for this. You can just call 'zipcodes' directly
 ; as shown in the sample example
 (define (getLatLon zipcode zips)
-	;(list zipcode (car zips))
-        (if (= (caar zips) zipcode)
-            (append (cdr (cdddar zips)))
-            (getLatLon zipcode (cdr zips))
+        ; base case: if the zipcode is not found return
+        ; an empty list
+        (if (null? zips)
+                 '()
+                 ; else check if the zipcode matches
+                 (if (= (caar zips) zipcode)
+                        ; if the zipcodes match, make a list of the pair
+                        (cons (cadr (cdddar zips)) (cddr (cdddar zips)))
+                        ; otherwise continue to check for the zipcode
+                        (getLatLon zipcode (cdr zips))
+                  )
         )
 )
 
 (line "getLatLon")
 (mydisplay (getLatLon 45056 zipcodes))
-(mydisplay (getLatLon 99553 zipcodes))
 (line "getLatLon")
 ; ---------------------------------------------
 
