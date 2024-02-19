@@ -252,8 +252,8 @@
   (if (null? placeList)
       '()
       (if (ismember (car placeList) (cdr placeList)) ; need to be checking the list already printing ugh
-            '()
             (cons (car placeList) (noDuplicates (cdr placeList)))
+            (append (noDuplicates (cdr placeList)))
       )
    )
 )
@@ -267,11 +267,12 @@
         ;)
         (define placesOfState1 (findPlacesOfState state1 zips))
         (define placesOfState2 (findPlacesOfState state2 zips))
-        ;(display (noDuplicates placesOfState2))
+        (define fullList (comparisonLoop placesOfState1 placesOfState2))
+        ;(display (noDuplicates lst1))
         (if (null? placesOfState1)
             '()
             ;(comparisonLoop (noDuplicates placesOfState1) (noDuplicates placesOfState2))
-            (display (noDuplicates (comparisonLoop placesOfState1 placesOfState2)))
+            (noDuplicates fullList)
         )
 )
 
@@ -299,7 +300,19 @@
 ; state -- state
 ; zips -- zipcode DB
 (define (zipCount state zips)
-	0
+        ; base case
+	(if (null? zips)
+            0
+            ; if the state from zips equals the state given
+            (if (equal? (caddar zips) state)
+                 ; that means it is a zipcode entry for the particular
+                 ; state so add 1 to the count and check again
+                 (+ 1 (zipCount state (cdr zips)))
+                 ; otherwise it is the wrong state so keep checking
+                 ; without adding to the counts
+                 (zipCount state (cdr zips))
+            )
+        )
 )
 
 (line "zipCount")
