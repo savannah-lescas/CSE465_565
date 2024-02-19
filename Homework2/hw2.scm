@@ -216,6 +216,7 @@
 ; Returns a list of all the place names common to two states.
 ; placeName -- is the text corresponding to the name of the place
 ; zips -- the zipcode DB
+; from class
 (define (ismember city lst)
 	(cond
 		((null? lst) #f) ; if part
@@ -223,57 +224,83 @@
 		(else (ismember city (cdr lst))) ; else
 	)
 )
+; a method that returns a list of all the places that match a
+; given state
 (define (findPlacesOfState state zips)
+  ; base case
   (if (null? zips)
       '()
-      (if (equal? (caddar zips) state) ; need to find a way to add "not in the list"
+      ; check if the given state matches the state from the zips file
+      (if (equal? (caddar zips) state)
+          ; if it matches, add the place to the list then repeat with
+          ; the rest of the zips file
           (cons (cadar zips) (findPlacesOfState state (cdr zips)))
+          ; otherwise don't add to the list and repeat
           (findPlacesOfState state (cdr zips))
       )
   )
 )
+; a method that compares the first place of the places1 list to
+; all of the places from state2
 (define (comparePlaces places1 places2)
+  ; base case
   (if (null? places2)
       '()
+      ; checks if both places are the same
       (if (equal? (car places1) (car places2))
+          ; if they are equal add it to the list then repeat with the
+          ; places of state2 minus the one just checked
           (cons (car places1) (comparePlaces  places1 (cdr places2)))
+          ; if they are not eqaul just loop again with the places of
+          ; state2 minus the one just checked
           (comparePlaces places1 (cdr places2))
       )
   )
-
 )
+; a method that gets the entire list of both states' shared common
+; places
 (define (comparisonLoop placesOfState1 placesOfState2)
+        ; base case
         (if (null? placesOfState1)
             '()
+            ; does the list creating by looping through the placesOfState1 list
+            ; and compares its elements to all the places of state2 with the
+            ; comparePlaces method
             (append (comparePlaces placesOfState1 placesOfState2) (comparisonLoop (cdr placesOfState1) placesOfState2))
         )
 )
-(define (noDuplicates placeList)
-  (if (null? placeList)
-      '()
-      (if (ismember (car placeList) (cdr placeList)) ; need to be checking the list already printing ugh
-            (cons (car placeList) (noDuplicates (cdr placeList)))
-            (append (noDuplicates (cdr placeList)))
-      )
+; chatgpt helped create this method so that duplicate common cities
+; wouldn't be listed multiple times
+(define (noDuplicates lst)
+  ; an inner function that performs the checking on the list
+  (define (removeDuplicates lst seen)
+    (cond
+      ; base case
+      ((null? lst) '())
+      ; uses ismember method do see if the list element is in the final
+      ; list yet then repeats the process without the first element
+      ((ismember (car lst) seen) (removeDuplicates (cdr lst) seen))
+      ; if it is not a member, it is added to the list and then repeats
+      ; the loop again with the rest of the list and updates the list
+      ; "seen" to have the new element
+      (else (cons (car lst) (removeDuplicates (cdr lst) (cons (car lst) seen))))
+     )
    )
+  ; runs the method to get the final list
+  (removeDuplicates lst '())
 )
+; the method that brings all the other helper methods together
 (define (getCommonPlaces state1 state2 zips)
-        ;(define lst1 '("Franklin" "Oxford" "Akron" "Trenton"))
-        ;(define lst2 '("Oxford" "Akron" "Columbus" "Franklin"))
-        
-        ;(if (null? lst1)
-            ;'()
-            ;(comparisonLoop lst1 lst2)
-        ;)
+        ; we get the list of all the places/cities from the first given
+        ; state by running the helper method "findPlacesOfState1"
         (define placesOfState1 (findPlacesOfState state1 zips))
+        ; repeats with state 2
         (define placesOfState2 (findPlacesOfState state2 zips))
+        ; gets a full list with all of the same elements from both lists
+        ; of cities/places
         (define fullList (comparisonLoop placesOfState1 placesOfState2))
-        ;(display (noDuplicates lst1))
-        (if (null? placesOfState1)
-            '()
-            ;(comparisonLoop (noDuplicates placesOfState1) (noDuplicates placesOfState2))
-            (noDuplicates fullList)
-        )
+        ; gets rid of any potential duplicates in the full list
+        (noDuplicates fullList)
 )
 
 (line "getCommonPlaces")
@@ -347,7 +374,8 @@
 ; lst -- flat list of items
 ; filters -- list of predicates to apply to the individual elements
 
-; chatgpt
+; chatgpt helped create a function that can translate the predicate from the list
+; into the actual predicate function
 (define (resolve name)
   (cond
     ((eq? name 'POS?) POS?)
@@ -359,28 +387,36 @@
   )
 )
 
+; a function that applies a single predicate to the whole list of values
 (define (performPredicate filter lst)
+  ; base case
   (if (null? lst)
       '()
+      ; converts the specific filter into its predicate function
       (let ((predicate (resolve filter)))
+         ; check if the element satifies the predicate function
          (if (predicate (car lst))
+             ; if it does add it to the list
              (cons (car lst) (performPredicate filter (cdr lst)))
+             ; if it does not continue checking the list until it is empty
              (performPredicate filter (cdr lst))
           )
       )
    )
 )
-(define (formNewList filters lst)
-    (append (performPredicate (car filters) lst))
-)
-
+; the function that goes through the filters given and applies
+; them to return the list of elements that satisfies all the
+; filters
 (define (filterList lst filters)
-      (if (null? filters)
-          '()
-          ;(formNewList filters lst) 
-          (append (formNewList filters lst) (filterList (formNewList filters lst) (cdr filters)))        
-          ;(cons (performPredicate (car filters) lst) (filterList lst (cdr filters)))
-      )
+  ; base case
+  (if (null? filters)
+      lst
+      ; first creates a list with the elements that work with the filter
+      (let ((filtered (performPredicate (car filters) lst)))
+        ; repeats it to filter the newer lists
+        (filterList filtered (cdr filters))
+       )
+   )
 )
 
 (line "filterList")
