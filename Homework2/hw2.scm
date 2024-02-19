@@ -174,7 +174,7 @@
 (define (crossproduct lst1 lst2)
          ; base case
 	(if (or (null? lst1) (null? lst2))
-           lst1
+           '()
            ; add the pairs to the list by running the helper
            ; method to get the correct products and using recursion
            ; to do it for each element of the list
@@ -216,8 +216,63 @@
 ; Returns a list of all the place names common to two states.
 ; placeName -- is the text corresponding to the name of the place
 ; zips -- the zipcode DB
+(define (ismember city lst)
+	(cond
+		((null? lst) #f) ; if part
+		((equal? city (car lst)) #t) ; else-if
+		(else (ismember city (cdr lst))) ; else
+	)
+)
+(define (findPlacesOfState state zips)
+  (if (null? zips)
+      '()
+      (if (equal? (caddar zips) state) ; need to find a way to add "not in the list"
+          (cons (cadar zips) (findPlacesOfState state (cdr zips)))
+          (findPlacesOfState state (cdr zips))
+      )
+  )
+)
+(define (comparePlaces places1 places2)
+  (if (null? places2)
+      '()
+      (if (equal? (car places1) (car places2))
+          (cons (car places1) (comparePlaces  places1 (cdr places2)))
+          (comparePlaces places1 (cdr places2))
+      )
+  )
+
+)
+(define (comparisonLoop placesOfState1 placesOfState2)
+        (if (null? placesOfState1)
+            '()
+            (append (comparePlaces placesOfState1 placesOfState2) (comparisonLoop (cdr placesOfState1) placesOfState2))
+        )
+)
+(define (noDuplicates placeList)
+  (if (null? placeList)
+      '()
+      (if (ismember (car placeList) (cdr placeList)) ; need to be checking the list already printing ugh
+            '()
+            (cons (car placeList) (noDuplicates (cdr placeList)))
+      )
+   )
+)
 (define (getCommonPlaces state1 state2 zips)
-	(list state1 state2)
+        ;(define lst1 '("Franklin" "Oxford" "Akron" "Trenton"))
+        ;(define lst2 '("Oxford" "Akron" "Columbus" "Franklin"))
+        
+        ;(if (null? lst1)
+            ;'()
+            ;(comparisonLoop lst1 lst2)
+        ;)
+        (define placesOfState1 (findPlacesOfState state1 zips))
+        (define placesOfState2 (findPlacesOfState state2 zips))
+        ;(display (noDuplicates placesOfState2))
+        (if (null? placesOfState1)
+            '()
+            ;(comparisonLoop (noDuplicates placesOfState1) (noDuplicates placesOfState2))
+            (display (noDuplicates (comparisonLoop placesOfState1 placesOfState2)))
+        )
 )
 
 (line "getCommonPlaces")
@@ -230,7 +285,7 @@
 ; states -- is list of state names
 ; zips -- the zipcode DB
 (define (getCommonPlaces2 states zips)
-	'("Oxford" "Franklin")
+	'()
 )
 
 (line "getCommonPlaces2")
