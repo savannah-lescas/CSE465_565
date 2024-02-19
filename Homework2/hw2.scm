@@ -98,11 +98,8 @@
 (line "struct")
 ; ---------------------------------------------
 
-; Returns a list of two numeric values. The first is the smallest
-; in the list and the second is the largest in the list. 
-; lst -- contains numeric values, and length is >= 1.
-
 ; method to find the minimum
+; lst -- list to find min of
 (define (minelt lst)
   (if (= 1 (length lst))
       (car lst)
@@ -110,12 +107,16 @@
    )
  )
 ; method to find the maximum
+; lst -- list to find max of
 (define (maxelt lst)
     (if (= 1 (length lst))
          (car lst)
          (max (car lst) (maxelt (cdr lst)))
      )
  )
+; Returns a list of two numeric values. The first is the smallest
+; in the list and the second is the largest in the list. 
+; lst -- contains numeric values, and length is >= 1.
 (define (minAndMax lst)
         ; use the other functions to find the minimum and
         ; maximum and then make a list with them
@@ -154,13 +155,9 @@
 (line "flatten")
 ; ---------------------------------------------
 
-; The paramters are two lists. The result should contain the cross product
-; between the two lists: 
-; The inputs '(1 2) and '(a b c) should return a single list:
-; ((1 a) (1 b) (1 c) (2 a) (2 b) (2 c))
-; lst1 & lst2 -- two flat lists.
-
-; helper method to do the pairings
+; helper method that does the pairings
+; leftelt -- element to match with the elements of lst2
+; lst2 -- flat list to pair with
 (define (pairElements leftelt lst2)
   ; base case
   (if (null? lst2)
@@ -171,6 +168,11 @@
             (pairElements leftelt (cdr lst2)))
   )
 )
+; The paramters are two lists. The result should contain the cross product
+; between the two lists: 
+; The inputs '(1 2) and '(a b c) should return a single list:
+; ((1 a) (1 b) (1 c) (2 a) (2 b) (2 c))
+; lst1 & lst2 -- two flat lists.
 (define (crossproduct lst1 lst2)
          ; base case
 	(if (or (null? lst1) (null? lst2))
@@ -213,10 +215,9 @@
 (line "getLatLon")
 ; ---------------------------------------------
 
-; Returns a list of all the place names common to two states.
-; placeName -- is the text corresponding to the name of the place
-; zips -- the zipcode DB
-; from class
+; method from class that checks if an element is in the list
+; city -- city
+; lst -- list of cities
 (define (ismember city lst)
 	(cond
 		((null? lst) #f) ; if part
@@ -226,6 +227,8 @@
 )
 ; a method that returns a list of all the places that match a
 ; given state
+; state -- state
+; zips -- zipcode DB
 (define (findPlacesOfState state zips)
   ; base case
   (if (null? zips)
@@ -242,6 +245,8 @@
 )
 ; a method that compares the first place of the places1 list to
 ; all of the places from state2
+; places1 -- list of all the places from state 1
+; places2 -- list of all the places from state 2
 (define (comparePlaces places1 places2)
   ; base case
   (if (null? places2)
@@ -259,6 +264,8 @@
 )
 ; a method that gets the entire list of both states' shared common
 ; places
+; placesOfState1 -- list of all the places from state 1
+; placesOfState2 -- list of all the places from state 2
 (define (comparisonLoop placesOfState1 placesOfState2)
         ; base case
         (if (null? placesOfState1)
@@ -271,6 +278,7 @@
 )
 ; chatgpt helped create this method so that duplicate common cities
 ; wouldn't be listed multiple times
+; lst -- flat list to check for duplicates
 (define (noDuplicates lst)
   ; an inner function that performs the checking on the list
   (define (removeDuplicates lst seen)
@@ -289,7 +297,9 @@
   ; runs the method to get the final list
   (removeDuplicates lst '())
 )
-; the method that brings all the other helper methods together
+; Returns a list of all the place names common to two states.
+; placeName -- is the text corresponding to the name of the place
+; zips -- the zipcode DB
 (define (getCommonPlaces state1 state2 zips)
         ; we get the list of all the places/cities from the first given
         ; state by running the helper method "findPlacesOfState1"
@@ -368,26 +378,23 @@
 (define (LARGE? x) (>= (abs x) 10))
 (define (SMALL? x) (not (LARGE? x)))
 
-; Returns a list of items that satisfy a set of predicates.
-; For example (filterList '(1 2 3 4 100) '(EVEN?)) should return the even numbers (2 4 100)
-; (filterList '(1 2 3 4 100) '(EVEN? SMALL?)) should return (2 4)
-; lst -- flat list of items
-; filters -- list of predicates to apply to the individual elements
-
 ; chatgpt helped create a function that can translate the predicate from the list
 ; into the actual predicate function
-(define (resolve name)
+; filter -- from the list of the parameter filters to convert
+(define (resolve filter)
   (cond
-    ((eq? name 'POS?) POS?)
-    ((eq? name 'NEG?) NEG?)
-    ((eq? name 'EVEN?) EVEN?)
-    ((eq? name 'LARGE?) LARGE?)
-    ((eq? name 'SMALL?) SMALL?)
-    (else (error "Unknown predicate:" name))
+    ((eq? filter 'POS?) POS?)
+    ((eq? filter 'NEG?) NEG?)
+    ((eq? filter 'EVEN?) EVEN?)
+    ((eq? filter 'LARGE?) LARGE?)
+    ((eq? filter 'SMALL?) SMALL?)
+    (else (error "Unknown predicate:" filter))
   )
 )
 
 ; a function that applies a single predicate to the whole list of values
+; filter -- a single predicate to perform on the list
+; lst -- flat list of items
 (define (performPredicate filter lst)
   ; base case
   (if (null? lst)
@@ -404,9 +411,11 @@
       )
    )
 )
-; the function that goes through the filters given and applies
-; them to return the list of elements that satisfies all the
-; filters
+; Returns a list of items that satisfy a set of predicates.
+; For example (filterList '(1 2 3 4 100) '(EVEN?)) should return the even numbers (2 4 100)
+; (filterList '(1 2 3 4 100) '(EVEN? SMALL?)) should return (2 4)
+; lst -- flat list of items
+; filters -- list of predicates to apply to the individual elements
 (define (filterList lst filters)
   ; base case
   (if (null? filters)
