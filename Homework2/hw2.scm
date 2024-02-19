@@ -337,6 +337,7 @@
 ; Some sample predicates
 (define (POS? x) (> x 0))
 (define (NEG? x) (> x 0))
+(define (EVEN? x) (= (modulo x 2) 0))
 (define (LARGE? x) (>= (abs x) 10))
 (define (SMALL? x) (not (LARGE? x)))
 
@@ -345,8 +346,41 @@
 ; (filterList '(1 2 3 4 100) '(EVEN? SMALL?)) should return (2 4)
 ; lst -- flat list of items
 ; filters -- list of predicates to apply to the individual elements
+
+; chatgpt
+(define (resolve name)
+  (cond
+    ((eq? name 'POS?) POS?)
+    ((eq? name 'NEG?) NEG?)
+    ((eq? name 'EVEN?) EVEN?)
+    ((eq? name 'LARGE?) LARGE?)
+    ((eq? name 'SMALL?) SMALL?)
+    (else (error "Unknown predicate:" name))
+  )
+)
+
+(define (performPredicate filter lst)
+  (if (null? lst)
+      '()
+      (let ((predicate (resolve filter)))
+         (if (predicate (car lst))
+             (cons (car lst) (performPredicate filter (cdr lst)))
+             (performPredicate filter (cdr lst))
+          )
+      )
+   )
+)
+(define (formNewList filters lst)
+    (append (performPredicate (car filters) lst))
+)
+
 (define (filterList lst filters)
-	lst
+      (if (null? filters)
+          '()
+          ;(formNewList filters lst) 
+          (append (formNewList filters lst) (filterList (formNewList filters lst) (cdr filters)))        
+          ;(cons (performPredicate (car filters) lst) (filterList lst (cdr filters)))
+      )
 )
 
 (line "filterList")
