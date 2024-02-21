@@ -373,8 +373,7 @@
 
 ; Some sample predicates
 (define (POS? x) (> x 0))
-(define (NEG? x) (> x 0))
-(define (EVEN? x) (= (modulo x 2) 0))
+(define (NEG? x) (< x 0))
 (define (LARGE? x) (>= (abs x) 10))
 (define (SMALL? x) (not (LARGE? x)))
 
@@ -383,11 +382,12 @@
 ; filter -- from the list of the parameter filters to convert
 (define (resolve filter)
   (cond
-    ((eq? filter 'POS?) POS?)
-    ((eq? filter 'NEG?) NEG?)
-    ((eq? filter 'EVEN?) EVEN?)
-    ((eq? filter 'LARGE?) LARGE?)
-    ((eq? filter 'SMALL?) SMALL?)
+    ((equal? filter 'POS?) positive?)
+    ((equal? filter 'NEG?) negative?)
+    ((equal? filter 'EVEN?) even?)
+    ((equal? filter 'ODD?) odd?)
+    ((equal? filter 'LARGE?) LARGE?)
+    ((equal? filter 'SMALL?) SMALL?)
     (else (error "Unknown predicate:" filter))
   )
 )
