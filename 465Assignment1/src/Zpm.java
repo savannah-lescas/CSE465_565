@@ -36,8 +36,8 @@ public class Zpm {
 			// traverse the file
 			while (scan.hasNextLine()) {
 				String line = scan.nextLine();
-				// split the parts of the line into strings
-				String[] input = line.split(" ");
+				// split the parts of the line parts
+				String[] input = line.split("(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)\\s+");
 				lineNumber++;
 				// run it through the doAssignments method
 				doAssignments(input);
@@ -105,7 +105,7 @@ public class Zpm {
 				compoundAssignments(input[0], input[1], variables.get(input[2]));
 			// if it is not a variable then do the compound assignment regularly
 			} else {
-				compoundAssignments(input[0], input[1], input[2]);
+				compoundAssignments(input[0], input[1], getRidOfQuotes(input[2]));
 			}
 		}
 	}
@@ -131,7 +131,7 @@ public class Zpm {
 				// checking that the assignment is to a string not a non-initialized
 				// variable
 				if (third.length() >= 2 && third.charAt(0) == '"') {
-					String noQuotes = third.substring(1, (third.length() - 1));
+					String noQuotes = getRidOfQuotes(third);
 					variables.put(first, noQuotes);
 				} else {
 					// since we know that the length is too short and it isn't
@@ -233,6 +233,16 @@ public class Zpm {
 				statement = "";
 			}
 		}
+	}
+	
+	private static String getRidOfQuotes(String quoted) {
+		String noQuotes = "";
+		for (int i = 0; i < quoted.length(); i++) {
+			if (quoted.charAt(i) != '"') {
+				noQuotes += quoted.charAt(i);
+			}
+		}
+		return noQuotes;
 	}
 	
 	/*
