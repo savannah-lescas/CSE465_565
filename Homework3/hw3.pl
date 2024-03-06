@@ -64,6 +64,8 @@ partitionable(S, [H|T]) :- SUM is S + H, partitionable(SUM, T).
 % list of integer numbers
 % elementExist(E, LST).
 
+elementExist(E, [H|_]) :- H = E.
+elementExist(E, [_|T]) :- elementExist(E, T).
 
 % elementExist(1, [1, 2, 3]). -> true.
 % elementExist(1, []). -> false.
