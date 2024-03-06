@@ -75,6 +75,10 @@ elementExist(E, [_|T]) :- elementExist(E, T).
 % Determine the reverse list of integer numbers
 % reverse(LST, REVLST).
 
+reverse([], []).
+reverse([L], [L]).
+% no
+reverse([H|T], REVLST) :- append([REVLST], [H], NL), reverse(T, NL).
 
 % reverse([], REVLST). -> REVLST = []
 % reverse([1, 1, 1], REVLST). -> REVLST = [1, 1, 1]
@@ -85,6 +89,10 @@ elementExist(E, [_|T]) :- elementExist(E, T).
 % Determine the list of integer numbers that are only one digit numbers
 % collectOneDigits(LST, NEWLST). 
 
+oneDigit(E) :- E < 10, E > -10.
+collectOneDigits([],[]).
+collectOneDigits([H|T], NEWLST) :- oneDigit(H), append([H], [NEWLST], N), collectOneDigits(T,N).
+%collectOneDigits([H|T], NEWLST) :- collectOneDigits(T,NEWLST).
 
 % collectOneDigits([10, 90, -20], NEWLST). -> NEWLST = []
 % collectOneDigits([], NEWLST). -> NEWLST = []
