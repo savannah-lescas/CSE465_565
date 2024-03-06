@@ -1,11 +1,14 @@
 % hw3.pl
-% ADD YOUR NAME HERE
+% Savannah Lescas
 
 % ------------------------------------------------
 % #1 (Undergraduate/Graduate) (5/5 pts)
 % Determine the Maximum of two int numbers
 % maxnums(A, B, MAX).
 
+maxnums(A, B, MAX) :- B > A, MAX is B.
+maxnums(A, B, MAX) :- A > B, MAX is A.
+maxnums(A, B, MAX) :- A = B, MAX is A.
 
 % maxnums(-12, 12, MAX). -> MAX = 12
 % maxnums(11232, 92674, MAX). -> MAX = 92674
@@ -15,6 +18,8 @@
 % Determine the summation of a list of integer numbers
 % sum(LST, SUM).
 
+sum([], 0).
+sum([H|T], SUM) :- sum(T, S), SUM is S + H.
 
 % sum([1, 2, 3, 4], SUM). -> SUM = 10
 % sum([10, -10], SUM). -> SUM = 0
@@ -26,6 +31,9 @@
 %    as part of your solution.
 % ** You can always assume that the given LST is not empty. 
 % max(LST, MAX).
+
+max([E], E).
+max([H1,H2|T], MAX) :-  append([H2], T, L), maxnums(H1, H2, M), max(L, M).
 
 
 % max([-5, -5, -5], MAX). -> MAX = -5
