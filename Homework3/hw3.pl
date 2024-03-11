@@ -150,8 +150,14 @@ getStateInfo(Place, State, Zipcode) :- location(Zipcode, Place, State, _, _, _).
 %    from Prolog library. Being able to learn something
 %    about a new programming language on your own is a skil that takes
 %    practice. 
-% getCcommon(STATE1, STATE2, PLACELST).
+% getCommon(STATE1, STATE2, PLACELST).
 
+% returns the places of a state
+getPlaces(State, Place) :- location(_, Place, State, _, _, _).
+% creates a list of everything returned from getPlaces
+listPlaces(State, PlaceLST) :- findall(Place, getPlaces(State, Place), PlaceLST).
+% appends both lists of places together
+getCommon(State1, State2, PlaceLst) :- listPlaces(State1, P1), listPlaces(State2, P2), append(P1, P2, PlaceLst).
 
 % getCommon('OH','MI',PLACELST). -> *Should be 131 unique plcase* 
 % ['Manchester','Unionville','Athens','Saint
