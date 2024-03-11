@@ -100,14 +100,13 @@ collectOneDigits([H|T], NEWLST) :- collectOneDigits(T,NEWLST).
 % #8 (Undergraduate/Graduate) (5/5 pts)
 % Consult the 'zipcodes.pl' file, and study it.
 % It contains facts about the US zipcodes.
-% location(Zipcode, Plcae, State, Location, Latitude, Longitude).
+ location(Zipcode, Place, State, Location, Latitude, Longitude).
 % Example: for getting all the Zipcodes and Sates you can do 
 %         location(Z, _, S, _, _, _). 
 % Determine all places based on given state and zipcode.
-% getStateInfo(PLACE, STATE< ZIPCODE).
+% getStateInfo(PLACE, STATE, ZIPCODE).
 
-
-
+getStateInfo(Place, State, Zipcode) :- location(Zipcode, Place, State, _, _, _).
 
 % getStateInfo('Oxford', State, 45056). -> State = 'OH'
 % getStateInfo('Oxford', State, _). -> 
