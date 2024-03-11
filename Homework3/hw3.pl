@@ -77,8 +77,7 @@ elementExist(E, [_|T]) :- elementExist(E, T).
 
 reverse([], []).
 reverse([L], [L]).
-% no
-reverse([H|T], REVLST) :- append([REVLST], [H], NL), reverse(T, NL).
+reverse([H|T], REVLST) :- append(NL, [H], REVLST), reverse(T, NL).
 
 % reverse([], REVLST). -> REVLST = []
 % reverse([1, 1, 1], REVLST). -> REVLST = [1, 1, 1]
@@ -91,8 +90,8 @@ reverse([H|T], REVLST) :- append([REVLST], [H], NL), reverse(T, NL).
 
 oneDigit(E) :- E < 10, E > -10.
 collectOneDigits([],[]).
-collectOneDigits([H|T], NEWLST) :- oneDigit(H), append([H], [NEWLST], N), collectOneDigits(T,N).
-%collectOneDigits([H|T], NEWLST) :- collectOneDigits(T,NEWLST).
+collectOneDigits([H|T], NEWLST) :- oneDigit(H), append([H], NL, NEWLST), collectOneDigits(T,NL).
+collectOneDigits([H|T], NEWLST) :- collectOneDigits(T,NEWLST).
 
 % collectOneDigits([10, 90, -20], NEWLST). -> NEWLST = []
 % collectOneDigits([], NEWLST). -> NEWLST = []
@@ -106,6 +105,8 @@ collectOneDigits([H|T], NEWLST) :- oneDigit(H), append([H], [NEWLST], N), collec
 %         location(Z, _, S, _, _, _). 
 % Determine all places based on given state and zipcode.
 % getStateInfo(PLACE, STATE< ZIPCODE).
+
+
 
 
 % getStateInfo('Oxford', State, 45056). -> State = 'OH'
