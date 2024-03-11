@@ -154,12 +154,16 @@ getStateInfo(Place, State, Zipcode) :- location(Zipcode, Place, State, _, _, _).
 
 % returns the places of a state
 getPlaces(State, Place) :- location(_, Place, State, _, _, _).
-% creates a list of everything returned from getPlaces
+% creates a list of everything returned from getPlaces using findall predicate
 listPlaces(State, PlaceLST) :- findall(Place, getPlaces(State, Place), PlaceLST).
-% appends both lists of places together
-getCommon(State1, State2, PlaceLst) :- listPlaces(State1, P1), listPlaces(State2, P2), append(P1, P2, PlaceLst).
+getCommon(State1, State2, PlaceLST) :- listPlaces(State1, P1), listPlaces(State2, P2), findCommons(P1, P2, PlaceLST).
+%findCommons([E], P2, PlaceLST) :- elementExist(E, P2), append([E], NL, PlaceLST).
+%findCommons([E], P2, PlaceLST) :- append([], NL, PlaceLST).
+findCommons([H1|T1], P2, PlaceLST) :- elementExist(H1, P2), append([H1], NL, PlaceLST), findCommons(T1, P2, NL).
+findCommons([H1|T1], P2, PlaceLST) :- findCommons(T1, P2, PlaceLST).
 
-% getCommon('OH','MI',PLACELST). -> *Should be 131 unique plcase* 
+
+% getCommon('OH','MI',PLACELST). -> *Should be 131 unique places* 
 % ['Manchester','Unionville','Athens','Saint
 % Johns','Belmont','Bellaire','Bridgeport','Lansing','Flushing','D
 % ecatur','Hamilton','Oxford','Trenton','Monroe','Augusta','Carrol
