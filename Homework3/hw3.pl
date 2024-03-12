@@ -6,8 +6,13 @@
 % Determine the Maximum of two int numbers
 % maxnums(A, B, MAX).
 
+% if B is greater than A return B
 maxnums(A, B, MAX) :- B > A, MAX is B.
+
+% if A is greater than B return A
 maxnums(A, B, MAX) :- A > B, MAX is A.
+
+% if A and B are equal return A
 maxnums(A, B, MAX) :- A = B, MAX is A.
 
 % maxnums(-12, 12, MAX). -> MAX = 12
@@ -18,7 +23,11 @@ maxnums(A, B, MAX) :- A = B, MAX is A.
 % Determine the summation of a list of integer numbers
 % sum(LST, SUM).
 
+% if the list is empty the sum is 0
 sum([], 0).
+
+% adds the head to the sum variable then runs again with the tail
+% and sum variable
 sum([H|T], SUM) :- sum(T, S), SUM is S + H.
 
 % sum([1, 2, 3, 4], SUM). -> SUM = 10
@@ -32,7 +41,11 @@ sum([H|T], SUM) :- sum(T, S), SUM is S + H.
 % ** You can always assume that the given LST is not empty. 
 % max(LST, MAX).
 
+% if there is one element it is the max
 max([MAX], MAX).
+
+% uses maxnums to compare the 2 heads, gets its max, then runs again 
+% on a new list with the max and the rest of the list
 max([H1,H2|T], MAX) :- maxnums(H1, H2, M), append([M], T, L), max(L, MAX).
 
 % max([-5, -5, -5], MAX). -> MAX = -5
@@ -47,10 +60,23 @@ max([H1,H2|T], MAX) :- maxnums(H1, H2, M), append([M], T, L), max(L, MAX).
 % ** You can always assume that the given LST is not empty. 
 % partitionable(LST).
 
+% if the list has only one element return true
 partitionable([LST]).
+
+% run the sum method on just the head and then the tail and if they are
+% equal return true
 partitionable([H|T]) :- sum([H], SUM1), sum(T, SUM2), SUM1 = SUM2.
+
+% add the heads of the list to make a list get its sum and compare it to 
+% the sum of the rest of the list by running the other verison of partitionable
 partitionable([H1,H2|T]) :- append([H1],[H2],L), sum(L, SUM), partitionable(SUM, T).
+
+% form of partitionable that takes in a sum and compares it to the sum of the
+% rest of the list
 partitionable(SUM, T) :- sum(T, SUM2), SUM = SUM2.
+
+% recursively goes through and adds the head to the sum of the left side
+% and compares it to the sum of the right side
 partitionable(S, [H|T]) :- SUM is S + H, partitionable(SUM, T).
  
 % partitionable([1, 2, 3, 4, 10]). -> true. because [10, 10]
@@ -64,7 +90,10 @@ partitionable(S, [H|T]) :- SUM is S + H, partitionable(SUM, T).
 % list of integer numbers
 % elementExist(E, LST).
 
+% if the element is found then return true
 elementExist(E, [H|_]) :- H = E.
+
+% if the element is not found keep checking the list
 elementExist(E, [_|T]) :- elementExist(E, T).
 
 % elementExist(1, [1, 2, 3]). -> true.
@@ -75,8 +104,10 @@ elementExist(E, [_|T]) :- elementExist(E, T).
 % Determine the reverse list of integer numbers
 % reverse(LST, REVLST).
 
+% base case
 reverse([], []).
-reverse([L], [L]).
+
+% does the reversing by adding whatever is the head to the list
 reverse([H|T], REVLST) :- append(NL, [H], REVLST), reverse(T, NL).
 
 % reverse([], REVLST). -> REVLST = []
@@ -88,9 +119,16 @@ reverse([H|T], REVLST) :- append(NL, [H], REVLST), reverse(T, NL).
 % Determine the list of integer numbers that are only one digit numbers
 % collectOneDigits(LST, NEWLST). 
 
+% helper that determines if the number is one digit
 oneDigit(E) :- E < 10, E > -10.
+
+% base case
 collectOneDigits([],[]).
+
+% if the number is one digit add it to the list then repeat with the rest of the list
 collectOneDigits([H|T], NEWLST) :- oneDigit(H), append([H], NL, NEWLST), collectOneDigits(T,NL).
+
+% if the number is not one digit just repeat with the rest of the list
 collectOneDigits([H|T], NEWLST) :- collectOneDigits(T,NEWLST).
 
 % collectOneDigits([10, 90, -20], NEWLST). -> NEWLST = []
@@ -106,6 +144,7 @@ collectOneDigits([H|T], NEWLST) :- collectOneDigits(T,NEWLST).
 % Determine all places based on given state and zipcode.
 % getStateInfo(PLACE, STATE, ZIPCODE).
 
+% get's whatever is needed from zipcodes.pl
 getStateInfo(Place, State, Zipcode) :- location(Zipcode, Place, State, _, _, _).
 
 % getStateInfo('Oxford', State, 45056). -> State = 'OH'
@@ -154,13 +193,26 @@ getStateInfo(Place, State, Zipcode) :- location(Zipcode, Place, State, _, _, _).
 
 % returns the places of a state
 getPlaces(State, Place) :- location(_, Place, State, _, _, _).
+
 % creates a list of everything returned from getPlaces using findall predicate
 listPlaces(State, PlaceLST) :- findall(Place, getPlaces(State, Place), PlaceLST).
-getCommon(State1, State2, PlaceLST) :- listPlaces(State1, P1), listPlaces(State2, P2), findCommons(P1, P2, PlaceLST).
-%findCommons([E], P2, PlaceLST) :- elementExist(E, P2), append([E], NL, PlaceLST).
-%findCommons([E], P2, PlaceLST) :- append([], NL, PlaceLST).
+
+% base case for helper
+findCommons([],_,[]).
+
+% if an element we are checking in state1's list is in state2's place list, add it to the combined list
 findCommons([H1|T1], P2, PlaceLST) :- elementExist(H1, P2), append([H1], NL, PlaceLST), findCommons(T1, P2, NL).
+
+% if the element being checked from state1 is not in state2's place list don't add it and repeat with 
+% the rest of the list
 findCommons([H1|T1], P2, PlaceLST) :- findCommons(T1, P2, PlaceLST).
+
+% when the states are the same, return an empty list
+getCommon(State1, State1, []).
+
+% calls to listPlaces gets the lists of all the places from state1 stores them in P1 does the same for State2 
+% with P2, and then recursive calls to findCommons with those lists and PlaceLST.
+getCommon(State1, State2, PlaceLST) :- listPlaces(State1, P1), listPlaces(State2, P2), findCommons(P1, P2, WithDupes), sort(WithDupes, PlaceLST).
 
 
 % getCommon('OH','MI',PLACELST). -> *Should be 131 unique places* 
@@ -189,8 +241,6 @@ findCommons([H1|T1], P2, PlaceLST) :- findCommons(T1, P2, PlaceLST).
 % ndee','Marysville','Ray','Franklin','Mason','Lowell','Newport','
 % Waterford','Sterling','Portage','Wayne','Grand Rapids','Weston']
 % 
-% getCommon(S1,'MI',PLACELST).  -> S1 = 'OH'
-% Assuming the PLACELIST is holding the result from the previous query
 % ------------------------------------------------
 % #10 ( -- /Graduate) (0/10 pts)
 % Download the 'parse.pl' from canvas and study it.
