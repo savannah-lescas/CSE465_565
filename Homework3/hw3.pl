@@ -195,6 +195,8 @@ getStateInfo(Place, State, Zipcode) :- location(Zipcode, Place, State, _, _, _).
 getPlaces(State, Place) :- location(_, Place, State, _, _, _).
 
 % creates a list of everything returned from getPlaces using findall predicate
+% discovered the findall predicate through stackoverflow.com and watched a YouTube
+% video on how to implement it
 listPlaces(State, PlaceLST) :- findall(Place, getPlaces(State, Place), PlaceLST).
 
 % base case for helper
@@ -212,6 +214,7 @@ getCommon(State1, State1, []).
 
 % calls to listPlaces gets the lists of all the places from state1 stores them in P1 does the same for State2 
 % with P2, and then recursive calls to findCommons with those lists and PlaceLST.
+% found the sort predicate through stackoverflow.com
 getCommon(State1, State2, PlaceLST) :- listPlaces(State1, P1), listPlaces(State2, P2), findCommons(P1, P2, WithDupes), sort(WithDupes, PlaceLST).
 
 
