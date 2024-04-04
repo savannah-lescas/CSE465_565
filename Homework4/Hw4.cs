@@ -15,6 +15,7 @@
   
 
 using System;
+using System.IO;
 
 public class Hw4
 {
@@ -33,6 +34,28 @@ public class Hw4
 
 
         // TODO: your code goes here
+        string[] lines = File.ReadAllLines("zipcodes.txt");
+        List<Places> allPlaces = new List<Places>;
+        for (int i = 1; i < lines.Length; i++)
+        {
+          string line = lines[i];
+          string[] parts = line.Split('\t');
+          if (parts.Length >= 8) // Ensure there are at least 8 parts
+          {
+            int recordNumber = int.Parse(parts[0]);
+            int zipcode = int.Parse(parts[1]);
+            string city = parts[3];
+            string state = parts[4];
+            float lat = float.Parse(parts[6]);
+            float lon = float.Parse(parts[7]);
+
+            Places record = new Places(recordNumber, zipcode, city, state, lat, lon);
+            allPlaces.Add(record);
+            // Process or use the variables as needed
+            // For example, print them
+            Console.WriteLine($"Record Number: {recordNumber}, Zipcode: {zipcode}, City: {city}, State: {state}, Latitude: {lat}, Longitude: {lon}");
+          }
+        }
 
 
 
@@ -53,4 +76,22 @@ public class Hw4
         // Display the elapsed time in milliseconds
         Console.WriteLine($"Elapsed Time: {elapsedTime.TotalMilliseconds} ms");
     }
+}
+
+public struct Places 
+{
+  public int recordNumber, zipcode;
+  public string city, state;
+  public double lat, lon;
+
+  // Constructor
+  public Places(int recordNumber, int zipcode, string city, string state, double lat, double lon)
+  {
+    this.recordNumber = recordNumber;
+    this.zipcode = zipcode;
+    this.city = city;
+    this.state = state;
+    this.lat = lat;
+    this.lon = lon;
+  }
 }
