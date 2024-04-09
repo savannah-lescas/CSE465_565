@@ -58,6 +58,7 @@ public class Hw4
 
     commonCities(allPlaces);
     getLatLon(allPlaces);
+    cityStates(allPlaces);
 
 
     // ============================
@@ -137,26 +138,41 @@ public class Hw4
   {
     // get zip codes to find
     string inputFile = "cities.txt";
-    string[] zipcodes = File.ReadAllLines(inputFile);
+    string[] cities = File.ReadAllLines(inputFile);
 
-    using (StreamWriter writer = new StreamWriter("LatLon.txt"))
+    // Dictionary<string, string> cityStateDictionary = new Dictionary<string, string>;
+    SortedSet<string> stateList = new SortedSet<string>();
+
+    using (StreamWriter writer = new StreamWriter("CityStates.txt"))
     {
 
-      foreach (string zip in zipcodes)
+      // a loop that goes through each city name in the cities.txt file
+      foreach (string city in cities)
       {
+        // loop that gets every state that has the city and puts it into 
+        // a sorted set
         foreach (Places record in allPlaces)
         {
-          if (int.Parse(zip) == record.zipcode)
+          if (string.Equals(city, record.city, StringComparison.OrdinalIgnoreCase))
           {
-            // might need to implement a check if a zip code(first zipcode listed)
-            // does not have a lot or lon
-            writer.WriteLine(record.lat + " " + record.lon);
-            break;
+            stateList.Add(record.state);
           }
         }
+
+        // write to the file
+        foreach (string state in stateList)
+        {
+          writer.Write(state + " ");
+        }
+
+        // clear the set before going onto the next city in the list
+        writer.WriteLine();
+        stateList.Clear();
       }
+
     }
-  } // end getLatLon
+  } // end cityStates
+
 } // end main
 
 
