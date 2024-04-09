@@ -132,6 +132,31 @@ public class Hw4
       }
     }
   } // end getLatLon
+
+    public static void cityStates(List<Places> allPlaces)
+  {
+    // get zip codes to find
+    string inputFile = "cities.txt";
+    string[] zipcodes = File.ReadAllLines(inputFile);
+
+    using (StreamWriter writer = new StreamWriter("LatLon.txt"))
+    {
+
+      foreach (string zip in zipcodes)
+      {
+        foreach (Places record in allPlaces)
+        {
+          if (int.Parse(zip) == record.zipcode)
+          {
+            // might need to implement a check if a zip code(first zipcode listed)
+            // does not have a lot or lon
+            writer.WriteLine(record.lat + " " + record.lon);
+            break;
+          }
+        }
+      }
+    }
+  } // end getLatLon
 } // end main
 
 
