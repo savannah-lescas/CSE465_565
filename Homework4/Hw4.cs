@@ -57,6 +57,7 @@ public class Hw4
     }
 
     commonCities(allPlaces);
+    getLatLon(allPlaces);
 
 
     // ============================
@@ -105,35 +106,33 @@ public class Hw4
     string outputFile = "CommonCityNames.txt";
     File.WriteAllText(outputFile, string.Empty);
     File.WriteAllLines(outputFile, commonCities);
-  }
+  } // end commmonCities
 
   public static void getLatLon(List<Places> allPlaces)
   {
     // get zip codes to find
     string inputFile = "zips.txt";
-    string[] lines = File.ReadAllLines(inputFile);
+    string[] zipcodes = File.ReadAllLines(inputFile);
 
-    string latlon = "";
-    List<string> latlonList = new List<string>();
-
-    foreach (string line in lines)
+    using (StreamWriter writer = new StreamWriter("LatLon.txt"))
     {
-      foreach (Places record in allPlaces)
+
+      foreach (string zip in zipcodes)
       {
-        if (int.Parse(line) == record.zipcode)
+        foreach (Places record in allPlaces)
         {
-          latlon = record.lat.ToString() + " " + record.lon.ToString();
-          latlonList.Add(latlon);
-          latlon = "";
+          if (int.Parse(zip) == record.zipcode)
+          {
+            // might need to implement a check if a zip code(first zipcode listed)
+            // does not have a lot or lon
+            writer.WriteLine(record.lat + " " + record.lon);
+            break;
+          }
         }
       }
     }
-
-    string outputFile = "LatLon.txt";
-    File.WriteAllText(outputFile, string.Empty);
-    File.WriteAllLines(outputFile, latlonList);
-  }
-}
+  } // end getLatLon
+} // end main
 
 
 public struct Places
