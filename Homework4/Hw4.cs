@@ -144,7 +144,6 @@ public class Hw4
     string inputFile = "cities.txt";
     string[] cities = File.ReadAllLines(inputFile);
 
-    // Dictionary<string, string> cityStateDictionary = new Dictionary<string, string>;
     SortedSet<string> stateList = new SortedSet<string>();
 
     using (sw writer = new sw("CityStates.txt"))
@@ -153,12 +152,16 @@ public class Hw4
       // a loop that goes through each city name in the cities.txt file
       foreach (string city in cities)
       {
+        // made a new Places object so I can use the .Equals method
+        Places justCity = new Places();
+        justCity.setCity(city);
         // loop that gets every state that has the city and puts it into 
         // a sorted set
         foreach (Places record in allPlaces)
         {
-          if (string.Equals(city, record.getCity(), StringComparison.OrdinalIgnoreCase))
+          if (justCity.Equals(record))
           {
+            Console.WriteLine("record.getState()");
             stateList.Add(record.getState());
           }
         }
@@ -187,7 +190,8 @@ public struct Places
   public double? lat, lon;
 
   // constructor
-  public Places(int recordNumber, int zipcode, string city, string state, double? lat, double? lon)
+  public Places(int recordNumber = 0, int zipcode = 0, string city = "",
+    string state = "", double? lat = null, double? lon = null)
   {
     this.recordNumber = recordNumber;
     this.zipcode = zipcode;
@@ -197,7 +201,19 @@ public struct Places
     this.lon = lon;
   }
 
+  public override bool Equals(object obj)
+  {
+      if (obj is Places other)
+      {
+          return string.Equals(this.city, other.city, StringComparison.OrdinalIgnoreCase);
+      }
+      return false;
+  }
 
+  public override int GetHashCode()
+  {
+      return city != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(city) : 0;
+  }
 
   // getter and setter methods for recordNumber
   public int getRecordNumber()
