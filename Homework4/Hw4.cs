@@ -26,20 +26,16 @@ public class Hw4
   // void delegate that works for all the methods using a ref List<Place>
   // as its parameter
   public delegate void VoidFunc(ref List<Place> allPlaces);
-  static void RunMethods()
+  static void runMethods()
   {
+    string filename;
+    List<Place> allPlaces = populatePlacesRecords(out filename);
+
     VoidFunc func = commonCities;
     func += getLatLon;
     func += cityStates;
 
-    doThem(func);
-  }
-
-  static void doThem(VoidFunc run)
-  {
-    string filename;
-    List<Place> allPlaces = populatePlacesRecords(out filename);
-    run(ref allPlaces);
+    func(ref allPlaces);
   }
   public static void Main(string[] args)
   {
@@ -51,7 +47,7 @@ public class Hw4
     // Main method
     // ============================
 
-    RunMethods();
+    runMethods();
 
     // ============================
     // Do not add or change anything below, inside the 
