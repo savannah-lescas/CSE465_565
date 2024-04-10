@@ -124,9 +124,11 @@ public class Hw4
 
       foreach (string zip in zipcodes)
       {
+        Places justZip = new Places();
+        justZip.setZipcode(int.Parse(zip));
         foreach (Places record in allPlaces)
         {
-          if (int.Parse(zip) == record.getZipcode())
+          if (justZip == record)
           {
             // might need to implement a check if a zip code(first zipcode listed)
             // does not have a lot or lon
@@ -161,7 +163,6 @@ public class Hw4
         {
           if (justCity.Equals(record))
           {
-            Console.WriteLine("record.getState()");
             stateList.Add(record.getState());
           }
         }
@@ -201,6 +202,7 @@ public struct Places
     this.lon = lon;
   }
 
+  // override a method
   public override bool Equals(object obj)
   {
       if (obj is Places other)
@@ -208,6 +210,12 @@ public struct Places
           return string.Equals(this.city, other.city, StringComparison.OrdinalIgnoreCase);
       }
       return false;
+  }
+
+  // override an operator
+  public static bool operator ==(Places place1, Places place2)
+  {
+      return place1.getZipcode() == place2.getZipcode();
   }
 
   public override int GetHashCode()
