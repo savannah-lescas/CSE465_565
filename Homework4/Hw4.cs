@@ -33,32 +33,7 @@ public class Hw4
     // Main method
     // ============================
 
-
-    string[] lines = File.ReadAllLines("zipcodes.txt");
-    List<Places> allPlaces = new List<Places>();
-    for (int i = 1; i < lines.Length; i++)
-    {
-      string line = lines[i];
-      string[] parts = line.Split('\t');
-      Places record = new Places();
-      if (parts.Length >= 8) // Ensure there are at least 8 parts
-      {
-        record.setRecordNumber(int.Parse(parts[0]));
-        record.setZipcode(int.Parse(parts[1]));
-        record.setCity(parts[3]);
-        record.setState(parts[4]);
-        record.setLat(null);
-        record.setLon(null);
-        // chatgpt helped come up with this tester to see if the lat/lon is there
-        if (double.TryParse(parts[6], out double parsedLat) && double.TryParse(parts[7], out double parsedLon))
-        {
-          record.setLat(parsedLat);
-          record.setLon(parsedLon);
-        }
-
-        allPlaces.Add(record);
-      }
-    }
+    List<Places> allPlaces = populatePlacesRecords();
 
     commonCities(allPlaces);
     getLatLon(allPlaces);
@@ -79,6 +54,37 @@ public class Hw4
     // Display the elapsed time in milliseconds
     Console.WriteLine($"Elapsed Time: {elapsedTime.TotalMilliseconds} ms");
   } // end main
+
+  public static List<Places> populatePlacesRecords()
+  {
+    string[] lines = File.ReadAllLines("zipcodes.txt");
+    List<Places> allPlaces = new List<Places>();
+    for (int i = 1; i < lines.Length; i++)
+    {
+      string line = lines[i];
+      string[] parts = line.Split('\t');
+      Places record = new Places();
+      if (parts.Length >= 8) // Ensure there are at least 8 parts
+      {
+        record.setRecordNumber(int.Parse(parts[0]));
+        record.setZipcode(int.Parse(parts[1]));
+        record.setCity(parts[3]);
+        record.setState(parts[4]);
+        record.setLat(null);
+        record.setLon(null);
+        // chatgpt helped come up with this tester to see if the lat/lon
+        // is able to be parsed to a double
+        if (double.TryParse(parts[6], out double parsedLat) && double.TryParse(parts[7], out double parsedLon))
+        {
+          record.setLat(parsedLat);
+          record.setLon(parsedLon);
+        }
+
+        allPlaces.Add(record);
+      }
+    }
+    return allPlaces;
+  }
 
   public static void commonCities(List<Places> allPlaces)
   {
@@ -216,6 +222,11 @@ public struct Places
   public static bool operator ==(Places place1, Places place2)
   {
       return place1.getZipcode() == place2.getZipcode();
+  }
+
+  public static bool operator !=(Places place1, Places place2)
+  {
+      return !(place1.getZipcode() == place2.getZipcode());
   }
 
   public override int GetHashCode()
