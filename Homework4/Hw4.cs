@@ -33,7 +33,7 @@ public class Hw4
     // Main method
     // ============================
 
-    List<Places> allPlaces = populatePlacesRecords();
+    List<Place> allPlaces = populatePlacesRecords();
 
     commonCities(allPlaces);
     getLatLon(allPlaces);
@@ -55,15 +55,15 @@ public class Hw4
     Console.WriteLine($"Elapsed Time: {elapsedTime.TotalMilliseconds} ms");
   } // end main
 
-  public static List<Places> populatePlacesRecords()
+  public static List<Place> populatePlacesRecords()
   {
     string[] lines = File.ReadAllLines("zipcodes.txt");
-    List<Places> allPlaces = new List<Places>();
+    List<Place> allPlaces = new List<Place>();
     for (int i = 1; i < lines.Length; i++)
     {
       string line = lines[i];
       string[] parts = line.Split('\t');
-      Places record = new Places();
+      Place record = new Place();
       if (parts.Length >= 8) // Ensure there are at least 8 parts
       {
         record.setRecordNumber(int.Parse(parts[0]));
@@ -86,7 +86,7 @@ public class Hw4
     return allPlaces;
   }
 
-  public static void commonCities(List<Places> allPlaces)
+  public static void commonCities(List<Place> allPlaces)
   {
     // get the states to find common places of from states.txt
     string inputFile = "states.txt";
@@ -99,7 +99,7 @@ public class Hw4
       stateCitiesDictionary[state] = new SortedSet<string>();
     }
 
-    foreach (Places record in allPlaces)
+    foreach (Place record in allPlaces)
     {
       if (stateCitiesDictionary.ContainsKey(record.getState()))
       {
@@ -119,7 +119,7 @@ public class Hw4
     File.WriteAllLines(outputFile, commonCities);
   } // end commmonCities
 
-  public static void getLatLon(List<Places> allPlaces)
+  public static void getLatLon(List<Place> allPlaces)
   {
     // get zip codes to find
     string inputFile = "zips.txt";
@@ -130,9 +130,10 @@ public class Hw4
 
       foreach (string zip in zipcodes)
       {
-        Places justZip = new Places();
+        // made a SimplePlace object
+        SimplePlace justZip = new Place();
         justZip.setZipcode(int.Parse(zip));
-        foreach (Places record in allPlaces)
+        foreach (Place record in allPlaces)
         {
           if (justZip == record)
           {
@@ -146,7 +147,7 @@ public class Hw4
     }
   } // end getLatLon
 
-  public static void cityStates(List<Places> allPlaces)
+  public static void cityStates(List<Place> allPlaces)
   {
     // get zip codes to find
     string inputFile = "cities.txt";
@@ -160,12 +161,12 @@ public class Hw4
       // a loop that goes through each city name in the cities.txt file
       foreach (string city in cities)
       {
-        // made a new Places object so I can use the .Equals method
-        Places justCity = new Places();
+        // made a new SimplePlace object so I can use the .Equals method
+        SimplePlace justCity = new Place();
         justCity.setCity(city);
         // loop that gets every state that has the city and puts it into 
         // a sorted set
-        foreach (Places record in allPlaces)
+        foreach (Place record in allPlaces)
         {
           if (justCity.Equals(record))
           {
@@ -189,63 +190,36 @@ public class Hw4
 
 } // Hw4 Class
 
-
-public struct Places
+public class SimplePlace
 {
-  public int recordNumber, zipcode;
-  public string city, state;
-  public double? lat, lon;
+  public string city;
+  public int zipcode;
 
-  // constructor
-  public Places(int recordNumber = 0, int zipcode = 0, string city = "",
-    string state = "", double? lat = null, double? lon = null)
-  {
-    this.recordNumber = recordNumber;
-    this.zipcode = zipcode;
-    this.city = city;
-    this.state = state;
-    this.lat = lat;
-    this.lon = lon;
-  }
-
-  // override a method
   public override bool Equals(object obj)
   {
-      if (obj is Places other)
-      {
-          return string.Equals(this.city, other.city, StringComparison.OrdinalIgnoreCase);
-      }
-      return false;
+    if (obj is SimplePlace other)
+    {
+      return string.Equals(this.city, other.city, StringComparison.OrdinalIgnoreCase);
+    }
+    return false;
   }
 
   // override an operator
-  public static bool operator ==(Places place1, Places place2)
+  public static bool operator ==(SimplePlace place1, SimplePlace place2)
   {
-      return place1.getZipcode() == place2.getZipcode();
+    return place1.getZipcode() == place2.getZipcode();
   }
 
-  public static bool operator !=(Places place1, Places place2)
+  public static bool operator !=(SimplePlace place1, SimplePlace place2)
   {
-      return !(place1.getZipcode() == place2.getZipcode());
+    return !(place1.getZipcode() == place2.getZipcode());
   }
 
   public override int GetHashCode()
   {
-      return city != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(city) : 0;
+    return city != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(city) : 0;
   }
-
-  // getter and setter methods for recordNumber
-  public int getRecordNumber()
-  {
-    return recordNumber;
-  }
-
-  public void setRecordNumber(int value)
-  {
-    recordNumber = value;
-  }
-
-  // getter and setter methods for zipcode
+  // geter and setter methods for zipcode
   public int getZipcode()
   {
     return zipcode;
@@ -266,8 +240,38 @@ public struct Places
   {
     city = value;
   }
+}
 
-  // getter and Setter methods for state
+public class Place : SimplePlace
+{
+  public int recordNumber;
+  public string state;
+  public double? lat, lon;
+
+  // constructor
+  public Place(int recordNumber = 0, int zipcode = 0, string city = "",
+    string state = "", double? lat = null, double? lon = null)
+  {
+    this.recordNumber = recordNumber;
+    this.zipcode = zipcode;
+    this.city = city;
+    this.state = state;
+    this.lat = lat;
+    this.lon = lon;
+  }
+
+  // getter and setter methods for recordNumber
+  public int getRecordNumber()
+  {
+    return recordNumber;
+  }
+
+  public void setRecordNumber(int value)
+  {
+    recordNumber = value;
+  }
+
+  // getter and setter methods for state
   public string getState()
   {
     return state;
