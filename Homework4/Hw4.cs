@@ -18,6 +18,9 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
+// Alias
+using sw = System.IO.StreamWriter;
+
 public class Hw4
 {
   public static void Main(string[] args)
@@ -37,21 +40,22 @@ public class Hw4
     {
       string line = lines[i];
       string[] parts = line.Split('\t');
+      Places record = new Places();
       if (parts.Length >= 8) // Ensure there are at least 8 parts
       {
-        int recordNumber = int.Parse(parts[0]);
-        int zipcode = int.Parse(parts[1]);
-        string city = parts[3];
-        string state = parts[4];
-        double? lat = null;
-        double? lon = null;
+        record.setRecordNumber(int.Parse(parts[0]));
+        record.setZipcode(int.Parse(parts[1]));
+        record.setCity(parts[3]);
+        record.setState(parts[4]);
+        record.setLat(null);
+        record.setLon(null);
+        // chatgpt helped come up with this tester to see if the lat/lon is there
         if (double.TryParse(parts[6], out double parsedLat) && double.TryParse(parts[7], out double parsedLon))
         {
-          lat = parsedLat;
-          lon = parsedLon;
+          record.setLat(parsedLat);
+          record.setLon(parsedLon);
         }
 
-        Places record = new Places(recordNumber, zipcode, city, state, lat, lon);
         allPlaces.Add(record);
       }
     }
@@ -74,7 +78,7 @@ public class Hw4
 
     // Display the elapsed time in milliseconds
     Console.WriteLine($"Elapsed Time: {elapsedTime.TotalMilliseconds} ms");
-  }
+  } // end main
 
   public static void commonCities(List<Places> allPlaces)
   {
@@ -91,9 +95,9 @@ public class Hw4
 
     foreach (Places record in allPlaces)
     {
-      if (stateCitiesDictionary.ContainsKey(record.state))
+      if (stateCitiesDictionary.ContainsKey(record.getState()))
       {
-        stateCitiesDictionary[record.state].Add(record.city);
+        stateCitiesDictionary[record.getState()].Add(record.getCity());
       }
     }
 
@@ -115,18 +119,18 @@ public class Hw4
     string inputFile = "zips.txt";
     string[] zipcodes = File.ReadAllLines(inputFile);
 
-    using (StreamWriter writer = new StreamWriter("LatLon.txt"))
+    using (sw writer = new sw("LatLon.txt"))
     {
 
       foreach (string zip in zipcodes)
       {
         foreach (Places record in allPlaces)
         {
-          if (int.Parse(zip) == record.zipcode)
+          if (int.Parse(zip) == record.getZipcode())
           {
             // might need to implement a check if a zip code(first zipcode listed)
             // does not have a lot or lon
-            writer.WriteLine(record.lat + " " + record.lon);
+            writer.WriteLine(record.getLat() + " " + record.getLon());
             break;
           }
         }
@@ -134,7 +138,7 @@ public class Hw4
     }
   } // end getLatLon
 
-    public static void cityStates(List<Places> allPlaces)
+  public static void cityStates(List<Places> allPlaces)
   {
     // get zip codes to find
     string inputFile = "cities.txt";
@@ -143,7 +147,7 @@ public class Hw4
     // Dictionary<string, string> cityStateDictionary = new Dictionary<string, string>;
     SortedSet<string> stateList = new SortedSet<string>();
 
-    using (StreamWriter writer = new StreamWriter("CityStates.txt"))
+    using (sw writer = new sw("CityStates.txt"))
     {
 
       // a loop that goes through each city name in the cities.txt file
@@ -153,9 +157,9 @@ public class Hw4
         // a sorted set
         foreach (Places record in allPlaces)
         {
-          if (string.Equals(city, record.city, StringComparison.OrdinalIgnoreCase))
+          if (string.Equals(city, record.getCity(), StringComparison.OrdinalIgnoreCase))
           {
-            stateList.Add(record.state);
+            stateList.Add(record.getState());
           }
         }
 
@@ -173,7 +177,7 @@ public class Hw4
     }
   } // end cityStates
 
-} // end main
+} // Hw4 Class
 
 
 public struct Places
@@ -193,9 +197,71 @@ public struct Places
     this.lon = lon;
   }
 
-  // overriding ToString
-  public override string ToString()
+
+
+  // getter and setter methods for recordNumber
+  public int getRecordNumber()
   {
-    return $"Record Number: {recordNumber}, Zipcode: {zipcode}, City: {city}, State: {state}, Latitude: {lat}, Longitude: {lon}";
+    return recordNumber;
+  }
+
+  public void setRecordNumber(int value)
+  {
+    recordNumber = value;
+  }
+
+  // getter and setter methods for zipcode
+  public int getZipcode()
+  {
+    return zipcode;
+  }
+
+  public void setZipcode(int value)
+  {
+    zipcode = value;
+  }
+
+  // getter and setter methods for city
+  public string getCity()
+  {
+    return city;
+  }
+
+  public void setCity(string value)
+  {
+    city = value;
+  }
+
+  // getter and Setter methods for state
+  public string getState()
+  {
+    return state;
+  }
+
+  public void setState(string value)
+  {
+    state = value;
+  }
+
+  // getter and setter methods for lat
+  public double? getLat()
+  {
+    return lat;
+  }
+
+  public void setLat(double? value)
+  {
+    lat = value;
+  }
+
+  // getter and setter methods for lon
+  public double? getLon()
+  {
+    return lon;
+  }
+
+  public void setLon(double? value)
+  {
+    lon = value;
   }
 }
