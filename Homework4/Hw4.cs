@@ -33,11 +33,14 @@ public class Hw4
     // Main method
     // ============================
 
-    List<Place> allPlaces = populatePlacesRecords();
+    string filename;
+    // using a different type of parameter variable (out)
+    List<Place> allPlaces = populatePlacesRecords(out filename);
 
-    commonCities(allPlaces);
-    getLatLon(allPlaces);
-    cityStates(allPlaces);
+    // using a different type of parameter variable (ref)
+    commonCities(ref allPlaces);
+    getLatLon(ref allPlaces);
+    cityStates(ref allPlaces);
 
 
     // ============================
@@ -55,9 +58,10 @@ public class Hw4
     Console.WriteLine($"Elapsed Time: {elapsedTime.TotalMilliseconds} ms");
   } // end main
 
-  public static List<Place> populatePlacesRecords()
+  public static List<Place> populatePlacesRecords(out string filename)
   {
-    string[] lines = File.ReadAllLines("zipcodes.txt");
+    filename = "zipcodes.txt";
+    string[] lines = File.ReadAllLines(filename);
     List<Place> allPlaces = new List<Place>();
     for (int i = 1; i < lines.Length; i++)
     {
@@ -86,7 +90,7 @@ public class Hw4
     return allPlaces;
   }
 
-  public static void commonCities(List<Place> allPlaces)
+  public static void commonCities(ref List<Place> allPlaces)
   {
     // get the states to find common places of from states.txt
     string inputFile = "states.txt";
@@ -119,7 +123,7 @@ public class Hw4
     File.WriteAllLines(outputFile, commonCities);
   } // end commmonCities
 
-  public static void getLatLon(List<Place> allPlaces)
+  public static void getLatLon(ref List<Place> allPlaces)
   {
     // get zip codes to find
     string inputFile = "zips.txt";
@@ -147,7 +151,7 @@ public class Hw4
     }
   } // end getLatLon
 
-  public static void cityStates(List<Place> allPlaces)
+  public static void cityStates(ref List<Place> allPlaces)
   {
     // get zip codes to find
     string inputFile = "cities.txt";
