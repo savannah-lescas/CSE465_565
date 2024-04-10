@@ -23,6 +23,24 @@ using sw = System.IO.StreamWriter;
 
 public class Hw4
 {
+  // void delegate that works for all the methods using a ref List<Place>
+  // as its parameter
+  public delegate void VoidFunc(ref List<Place> allPlaces);
+  static void RunMethods()
+  {
+    VoidFunc func = commonCities;
+    func += getLatLon;
+    func += cityStates;
+
+    doThem(func);
+  }
+
+  static void doThem(VoidFunc run)
+  {
+    string filename;
+    List<Place> allPlaces = populatePlacesRecords(out filename);
+    run(ref allPlaces);
+  }
   public static void Main(string[] args)
   {
     // Capture the start time
@@ -33,15 +51,7 @@ public class Hw4
     // Main method
     // ============================
 
-    string filename;
-    // using a different type of parameter variable (out)
-    List<Place> allPlaces = populatePlacesRecords(out filename);
-
-    // using a different type of parameter variable (ref)
-    commonCities(ref allPlaces);
-    getLatLon(ref allPlaces);
-    cityStates(ref allPlaces);
-
+    RunMethods();
 
     // ============================
     // Do not add or change anything below, inside the 
