@@ -21,7 +21,8 @@ using System.Collections.Generic;
 // Alias
 using sw = System.IO.StreamWriter;
 
-public class Hw4
+// made Hw4 a struct
+public struct Hw4
 {
   // void delegate that works for all the methods using a ref List<Place>
   // as its parameter
@@ -102,7 +103,8 @@ public class Hw4
     string inputFile = "states.txt";
     string[] lines = File.ReadAllLines(inputFile);
 
-    Dictionary<string, SortedSet<string>> stateCitiesDictionary = new Dictionary<string, SortedSet<string>>();
+    //Dictionary<string, SortedSet<string>> stateCitiesDictionary = new Dictionary<string, SortedSet<string>>();
+    bool[,] cityMatrix = new bool[lines.Length, allPlaces.Count];
 
     foreach (string state in lines)
     {
