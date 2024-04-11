@@ -101,16 +101,30 @@ public struct Hw4
   {
     // get the states to find common places of from states.txt
     string inputFile = "states.txt";
-    string[] lines = File.ReadAllLines(inputFile);
+    string[] states = File.ReadAllLines(inputFile);
 
     //Dictionary<string, SortedSet<string>> stateCitiesDictionary = new Dictionary<string, SortedSet<string>>();
-    bool[,] cityMatrix = new bool[lines.Length, allPlaces.Count];
+    bool[,] cityMatrix = new bool[states.Length, allPlaces.Length];
 
-    foreach (string state in lines)
+    for (int i = 0; i < states.Length; i++)
     {
-      stateCitiesDictionary[state] = new SortedSet<string>();
+      for (int j = 0; j < allPlaces.Length; j++)
+      {
+        cityMatrix[i, j] = false;
+      }
     }
 
+    for (int j = 0; j < allPlaces.Length; j++)
+    {
+      for (int i = 0; i < states.Length; i++)
+      {
+        if (allPlaces[j]. getState() == states[i]) 
+        {
+          cityMatrix[i, j] = true;
+        }
+      }
+    }
+    /*
     foreach (Place record in allPlaces)
     {
       if (stateCitiesDictionary.ContainsKey(record.getState()))
@@ -124,7 +138,7 @@ public struct Hw4
     {
       commonCities.IntersectWith(cities);
     }
-
+  */
     // write the common city names to the output file
     string outputFile = "CommonCityNames.txt";
     File.WriteAllText(outputFile, string.Empty);
