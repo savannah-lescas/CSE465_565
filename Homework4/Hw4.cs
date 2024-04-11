@@ -124,7 +124,7 @@ public struct Hw4
     {
       commonCities.IntersectWith(cities);
     }
-    
+
     // write the common city names to the output file
     string outputFile = "CommonCityNames.txt";
     File.WriteAllText(outputFile, string.Empty);
@@ -150,9 +150,18 @@ public struct Hw4
           if (justZip == record)
           {
             // might need to implement a check if a zip code(first zipcode listed)
-            // does not have a lot or lon
-            writer.WriteLine(record.getLat() + " " + record.getLon());
-            break;
+            // does not have a lot or lon\
+            double? lat = record.getLat();
+            double? lon = record.getLon();
+            if (lat != 0 && lon != 0)
+            {
+              writer.WriteLine(record.getLat() + " " + record.getLon());
+              break;
+            }
+            else
+            {
+              writer.WriteLine("Zipcode has no latitude or longitude");
+            }
           }
         }
       }
