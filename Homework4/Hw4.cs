@@ -32,10 +32,12 @@ public struct Hw4
     string filename;
     List<Place> allPlaces = populatePlacesRecords(out filename);
 
+    // all of the methods that need to be ran
     VoidFunc func = commonCities;
     func += getLatLon;
     func += cityStates;
-
+    
+    // does them with the List of all the records
     func(ref allPlaces);
   }
   public static void Main(string[] args)
@@ -48,6 +50,7 @@ public struct Hw4
     // Main method
     // ============================
 
+    // call to the delegate
     runMethods();
 
     // ============================
@@ -65,51 +68,90 @@ public struct Hw4
     Console.WriteLine($"Elapsed Time: {elapsedTime.TotalMilliseconds} ms");
   } // end main
 
+  /*
+  A method that populates a List of Place objects and returns it
+   by getting the necessary information fom zipcodes.txt.
+  */
   public static List<Place> populatePlacesRecords(out string filename)
   {
+    // since the parameter is an out type we assign the parameter to a value
+    // in the method
     filename = "zipcodes.txt";
+    // reads all the lines from the zipcodes.txt file
     string[] lines = File.ReadAllLines(filename);
+    // creates the List of Place objects to be returned
     List<Place> allPlaces = new List<Place>();
+
+    // for loop that goes through the array of lines from zipcodes.txt
     for (int i = 1; i < lines.Length; i++)
     {
       string line = lines[i];
+      // splits each line into parts by tabs
       string[] parts = line.Split('\t');
+      // initializes a Place object
       Place record = new Place();
-      if (parts.Length >= 8) // Ensure there are at least 8 parts
+      // gets each necessary part of the line and puts it into the
+      // Place object (record)
+      if (parts.Length >= 8) // ensure there are at least 8 parts
       {
         record.setRecordNumber(int.Parse(parts[0]));
         record.setZipcode(int.Parse(parts[1]));
         record.setCity(parts[3]);
         record.setState(parts[4]);
-        record.setLat(null);
-        record.setLon(null);
-        // chatgpt helped come up with this tester to see if the lat/lon
-        // is able to be parsed to a double
-        if (double.TryParse(parts[6], out double parsedLat) && double.TryParse(parts[7], out double parsedLon))
+        // some latitudes and longitudes don't have values so 
+        // make them null if there are none
+        if (string.IsNullOrWhiteSpace(parts[6]))
         {
-          record.setLat(parsedLat);
-          record.setLon(parsedLon);
+          record.setLat(null);
+        }
+        else 
+        {
+          record.setLat(double.Parse(parts[6]));
+        }
+        if (string.IsNullOrWhiteSpace(parts[7]))
+        {
+          record.setLon(null);
+        }
+        else 
+        {
+          record.setLon(double.Parse(parts[7]));
         }
 
+        // add the Place object to the list
         allPlaces.Add(record);
       }
     }
+
+    // return the list
     return allPlaces;
   }
 
+  /*
+  A method that performs the common city names problem. It takes in a reference
+  to the list of all the Place objects, reads the states.txt file, finds the city
+  names of all the places that are common to each state from states.txt and writes
+  them to CommonCityNames.txt.
+  */
   public static void commonCities(ref List<Place> allPlaces)
   {
     // get the states to find common places of from states.txt
     string inputFile = "states.txt";
     string[] lines = File.ReadAllLines(inputFile);
 
-    Dictionary<string, SortedSet<string>> stateCitiesDictionary = new Dictionary<string, SortedSet<string>>();
+    // a dictionary that has a string of the state name as the key
+    // and a sorted set of all its cities as the value
+    Dictionary<string, SortedSet<string>> stateCitiesDictionary
+       = new Dictionary<string, SortedSet<string>>();
 
+    // for every state in states.txt, add it to the dictionary with
+    // an empty sorted set
     foreach (string state in lines)
     {
       stateCitiesDictionary[state] = new SortedSet<string>();
     }
 
+    // for every Place object in the list, if record's state is a key 
+    // in the dictionary, add its listed city to the sorted set
     foreach (Place record in allPlaces)
     {
       if (stateCitiesDictionary.ContainsKey(record.getState()))
@@ -118,10 +160,16 @@ public struct Hw4
       }
     }
 
-    SortedSet<string> commonCities = new SortedSet<string>(stateCitiesDictionary[lines[0]]);
+    // initializes a new sorted set with the values from the first state's
+    // sorted set
+    SortedSet<string> commonCities = 
+      new SortedSet<string>(stateCitiesDictionary[lines[0]]);
 
+    // goes through every city name in the dictionary and compares it with
+    // the first state's city list
     foreach (var cities in stateCitiesDictionary.Values)
     {
+      // stack overflow showed me how to do this
       commonCities.IntersectWith(cities);
     }
 
@@ -131,36 +179,48 @@ public struct Hw4
     File.WriteAllLines(outputFile, commonCities);
   } // end commmonCities
 
+  /*
+  A method that perfoms the get latitude and longitude problem. It takes
+  in the list of all Place objects, reads through zips.txt to get the 
+  zipcodes to look for latitudes and longitudes for, goes through the 
+  list of PLace objects and finds the first non-null values for the zipcode's
+  latitude and longitudes and prints them to LatLon.txt.
+  */
   public static void getLatLon(ref List<Place> allPlaces)
   {
     // get zip codes to find
     string inputFile = "zips.txt";
     string[] zipcodes = File.ReadAllLines(inputFile);
 
+    // used a Stream Writer here to make it easier
     using (sw writer = new sw("LatLon.txt"))
     {
 
+      // go through every zipcode from the zips.txt file
       foreach (string zip in zipcodes)
       {
         // made a SimplePlace object
         SimplePlace justZip = new Place();
         justZip.setZipcode(int.Parse(zip));
+        // goes through every record in the list to find a matching
+        // zipcode
         foreach (Place record in allPlaces)
         {
+          // used an overrided operator to see if the zipcodes match
           if (justZip == record)
           {
-            // might need to implement a check if a zip code(first zipcode listed)
-            // does not have a lot or lon\
-            double? lat = record.getLat();
-            double? lon = record.getLon();
-            if (lat != 0 && lon != 0)
+            // if the latitude or longitude is null keep checking for non-null
+            // values
+            if (!record.getLat().HasValue || !record.getLon().HasValue)
             {
-              writer.WriteLine(record.getLat() + " " + record.getLon());
-              break;
+              continue;
             }
             else
             {
-              writer.WriteLine("Zipcode has no latitude or longitude");
+              // if they are not null write it to LatLon.txt separated by a space
+              // and stop looking
+              writer.WriteLine(record.getLat() + " " + record.getLon());
+              break;
             }
           }
         }
@@ -168,14 +228,23 @@ public struct Hw4
     }
   } // end getLatLon
 
+  /*
+  A method that perfroms the city states problem. Takes in the list
+  of Place objects, reads the cities from cities.txt, creates a sorted
+  set of all the states that have the certain city name, writes the
+  list of sorted states to CityStates.txt.
+  */
   public static void cityStates(ref List<Place> allPlaces)
   {
     // get zip codes to find
     string inputFile = "cities.txt";
     string[] cities = File.ReadAllLines(inputFile);
-
+    
+    // creates the sorted set to be populated with states that have
+    // the city
     SortedSet<string> stateList = new SortedSet<string>();
 
+    // using a Stream Writer again to make it easier
     using (sw writer = new sw("CityStates.txt"))
     {
 
@@ -211,11 +280,15 @@ public struct Hw4
 
 } // Hw4 Class
 
+/*
+A superclass that has only city and zipcode properties.
+*/
 public class SimplePlace
 {
   public string city;
   public int zipcode;
 
+  // overriding the Equals operator
   public override bool Equals(object obj)
   {
     if (obj is SimplePlace other)
@@ -225,21 +298,25 @@ public class SimplePlace
     return false;
   }
 
-  // override an operator
+  // this was apparently necessary to override the equals operator
+  // ChatGPT
+  public override int GetHashCode()
+  {
+    return city != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(city) : 0;
+  }
+  
+  // override the == operator
   public static bool operator ==(SimplePlace place1, SimplePlace place2)
   {
     return place1.getZipcode() == place2.getZipcode();
   }
-
+  
+  // needed this in order to override the == operator
   public static bool operator !=(SimplePlace place1, SimplePlace place2)
   {
     return !(place1.getZipcode() == place2.getZipcode());
   }
 
-  public override int GetHashCode()
-  {
-    return city != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(city) : 0;
-  }
   // geter and setter methods for zipcode
   public int getZipcode()
   {
@@ -263,6 +340,10 @@ public class SimplePlace
   }
 }
 
+/*
+A subclass that inherits the SimplePlace superclass that also has
+recordNumber, state, lat, and lon properties
+*/
 public class Place : SimplePlace
 {
   public int recordNumber;
