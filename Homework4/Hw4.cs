@@ -8,11 +8,7 @@
   only one that contains a Main method. This method should be within a 
   class named hw4. This specific setup is crucial because your instructor 
   will use the hw4 class to execute and evaluate your work.
-  */
-// BONUS POINT:
-// => Used Pointers from lines 10 to 15 <=
-// => Used Pointers from lines 40 to 63 <=
-
+*/
 
 using System;
 using System.IO;
@@ -165,8 +161,11 @@ public struct Hw4
     SortedSet<string> commonCities =
       new SortedSet<string>(stateCitiesDictionary[lines[0]]);
 
-    // goes through every city name in the dictionary and compares it with
-    // the first state's city list
+    // goes through every city name sorted set in the dictionary
+    // and compares it withthe first state's city list.
+    // the set will only contain cities that are in both sets
+    // so in the end, no matter how many states there are, it
+    // will only contain shared city names
     foreach (var cities in stateCitiesDictionary.Values)
     {
       // stack overflow showed me how to do this
@@ -240,10 +239,6 @@ public struct Hw4
     string inputFile = "cities.txt";
     string[] cities = File.ReadAllLines(inputFile);
 
-    // creates the sorted set to be populated with states that have
-    // the city
-    SortedSet<string> stateList = new SortedSet<string>();
-
     // using a Stream Writer again to make it easier
     using (sw writer = new sw("CityStates.txt"))
     {
@@ -251,6 +246,9 @@ public struct Hw4
       // a loop that goes through each city name in the cities.txt file
       foreach (string city in cities)
       {
+        // creates the sorted set to be populated with states that have
+        // the city
+        SortedSet<string> stateList = new SortedSet<string>();
         // made a new SimplePlace object so I can use the .Equals method
         SimplePlace justCity = new Place();
         justCity.setCity(city);
@@ -258,6 +256,7 @@ public struct Hw4
         // a sorted set
         foreach (Place record in allPlaces)
         {
+          // using the overrided method
           if (justCity.Equals(record))
           {
             stateList.Add(record.getState());
@@ -270,9 +269,7 @@ public struct Hw4
           writer.Write(state + " ");
         }
 
-        // clear the set before going onto the next city in the list
         writer.WriteLine();
-        stateList.Clear();
       }
 
     }
