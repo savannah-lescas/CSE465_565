@@ -36,7 +36,7 @@ public struct Hw4
     VoidFunc func = commonCities;
     func += getLatLon;
     func += cityStates;
-    
+
     // does them with the List of all the records
     func(ref allPlaces);
   }
@@ -104,7 +104,7 @@ public struct Hw4
         {
           record.setLat(null);
         }
-        else 
+        else
         {
           record.setLat(double.Parse(parts[6]));
         }
@@ -112,7 +112,7 @@ public struct Hw4
         {
           record.setLon(null);
         }
-        else 
+        else
         {
           record.setLon(double.Parse(parts[7]));
         }
@@ -162,7 +162,7 @@ public struct Hw4
 
     // initializes a new sorted set with the values from the first state's
     // sorted set
-    SortedSet<string> commonCities = 
+    SortedSet<string> commonCities =
       new SortedSet<string>(stateCitiesDictionary[lines[0]]);
 
     // goes through every city name in the dictionary and compares it with
@@ -239,7 +239,7 @@ public struct Hw4
     // get zip codes to find
     string inputFile = "cities.txt";
     string[] cities = File.ReadAllLines(inputFile);
-    
+
     // creates the sorted set to be populated with states that have
     // the city
     SortedSet<string> stateList = new SortedSet<string>();
@@ -304,13 +304,13 @@ public class SimplePlace
   {
     return city != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(city) : 0;
   }
-  
+
   // override the == operator
   public static bool operator ==(SimplePlace place1, SimplePlace place2)
   {
     return place1.getZipcode() == place2.getZipcode();
   }
-  
+
   // needed this in order to override the == operator
   public static bool operator !=(SimplePlace place1, SimplePlace place2)
   {
@@ -348,6 +348,7 @@ public class Place : SimplePlace
 {
   public int recordNumber;
   public string state;
+  // nullable latitude and longitude values
   public double? lat, lon;
 
   // constructor
