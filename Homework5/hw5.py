@@ -12,39 +12,6 @@ import time
   your work.
 """
 
-if __name__ == "__main__": 
-    start_time = time.perf_counter()  # Do not remove this line
-    '''
-    Inisde the __main__, do not add any codes before this line.
-    -----------------------------------------------------------
-    '''
-
-    
-    # write your code here
-
-
-    '''
-    Inside the __main__, do not add any codes after this line.
-    ----------------------------------------------------------
-    '''
-    end_time = time.perf_counter()
-    # Calculate the runtime in milliseconds
-    runtime_ms = (end_time - start_time) * 1000
-    print(f"The runtime of the program is {runtime_ms} milliseconds.")  
-    
-iFile = "zipcodes.txt"
-
-zipcodeFile = open(iFile, "r")
-
-def addRecord(line):
-    
-    record = Place()
-
-def createPlaceList(zipcodeFile):
-    # use map to apply a function to the lines
-    # from the file
-    pass()
-
 class SimplePlace:
     # constructor
     def __init__(self, city, zipcode):
@@ -70,7 +37,7 @@ class SimplePlace:
         self._zipcode = value
 
 class Place(SimplePlace):
-    def __intit__(self, city, zipcode, state, lat, lon):
+    def __init__(self, zipcode, city, state, lat, lon):
         SimplePlace.__init__(self, city, zipcode)
         self._state = state
         self._lat = lat
@@ -99,3 +66,44 @@ class Place(SimplePlace):
     # setter for longitude
     def set_lon(self, value):
         self._lon = value
+
+
+def addRecord(line):
+    parts = line.split('\t')
+    return Place(parts[1], parts[3], parts[4], parts[6], parts[7])
+
+def createPlaceList():
+    # use map to apply a function to the lines
+    # from the file
+    placeList = []
+    iFile = "zipcodes.txt"
+    zipcodeFile = open(iFile, "r")
+
+    # skip first line
+    next(zipcodeFile)
+    placeList.extend(map(addRecord, zipcodeFile))
+
+    zipcodeFile.close()
+
+    return placeList
+    
+
+if __name__ == "__main__": 
+    start_time = time.perf_counter()  # Do not remove this line
+    '''
+    Inisde the __main__, do not add any codes before this line.
+    -----------------------------------------------------------
+    '''
+
+    # code goes here
+
+
+    '''
+    Inside the __main__, do not add any codes after this line.
+    ----------------------------------------------------------
+    '''
+    end_time = time.perf_counter()
+    # Calculate the runtime in milliseconds
+    runtime_ms = (end_time - start_time) * 1000
+    print(f"The runtime of the program is {runtime_ms} milliseconds.")  
+    
