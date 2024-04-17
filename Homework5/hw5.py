@@ -18,7 +18,7 @@ class SimplePlace:
         self._city = city
         self._zipcode = zipcode
 
-    # override equals at some point
+    # override ==
     def __eq__(self, other):
         return self.get_zip() == other.get_zip()
     
@@ -155,7 +155,29 @@ def latLon(placeList):
     # close LatLon.txt
     latLonFile.close()
 
+def cityStates(placeList):
+    # try using list comprehension
+
+    # open the files for reading and writing
+    inFile = open("cities.txt", "r")
+    outFile = open("CityStates.txt", "w")
+
+    for city in inFile:
+        states = []
+        strippedCity = city.strip()
+        states = [record.get_state() for record in placeList if record.get_city() == strippedCity]
+
+        for state in states:
+            outFile.write(state + " ")
+
+        outFile.write('\n')
         
+
+        
+    inFile.close()
+    outFile.close()
+
+
 if __name__ == "__main__": 
     start_time = time.perf_counter()  # Do not remove this line
     '''
@@ -167,6 +189,7 @@ if __name__ == "__main__":
     placeList = createPlaceList()
     commonCityNames(placeList)
     latLon(placeList)
+    cityStates(placeList)
 
 
     '''
