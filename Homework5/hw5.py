@@ -36,6 +36,15 @@ iFile = "zipcodes.txt"
 
 zipcodeFile = open(iFile, "r")
 
+def addRecord(line):
+    
+    record = Place()
+
+def createPlaceList(zipcodeFile):
+    # use map to apply a function to the lines
+    # from the file
+    pass()
+
 class SimplePlace:
     # constructor
     def __init__(self, city, zipcode):
