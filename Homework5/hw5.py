@@ -94,14 +94,15 @@ def commonCityNames(placeList):
     with open("states.txt", "r") as states:
         # add the states as keys to the dictionary
         for state in states:
-            state = state.strip()  # Remove leading/trailing whitespace
-            if state:  # Check if the line is not empty
+            state = state.strip()
+            # check if the line is not empty
+            if state: 
                 state_city_dict[state] = set()
 
         # go through every place object
         for place in placeList:
-            state = place.get_state().strip()
-            city = place.get_city().strip()
+            state = place.get_state()
+            city = place.get_city()
 
             # if the state of the object is a key in the
             # dictionary, add its city to the key's list of 
@@ -111,7 +112,13 @@ def commonCityNames(placeList):
 
     # use filter with a lambda to check if the lists
     # contain the same cities
+    common_cities = set()
 
+    # sort the common cities set
+
+    with open("ComonCityNames.txt", "w") as outputFile:
+        for city in common_cities:
+            outputFile.write(city + '\n')
 
 
 if __name__ == "__main__": 
