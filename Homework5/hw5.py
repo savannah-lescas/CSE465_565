@@ -68,7 +68,7 @@ class Place(SimplePlace):
         self._lon = value
 
 
-def addRecord(line):
+def createRecord(line):
     parts = line.split('\t')
     return Place(parts[1], parts[3], parts[4], parts[6], parts[7])
 
@@ -81,12 +81,40 @@ def createPlaceList():
 
     # skip first line
     next(zipcodeFile)
-    placeList.extend(map(addRecord, zipcodeFile))
+    # uses map to apply the createRecord function on the 
+    # zipcdoe file
+    placeList.extend(map(createRecord, zipcodeFile))
 
     zipcodeFile.close()
 
     return placeList
     
+def commonCityNames(placeList):
+    state_city_dict = {}
+    iFile = "states.txt"
+    states = open(iFile, "r")
+
+    # add the states as keys to the dictionary
+    for state in states:
+        state_city_dict[state] = []
+
+    # go through every place object
+    for place in placeList:
+        state = place.get_state()
+        city = place.get_city()
+
+        # if the state of the object is a key in the
+        # dictionary, add its city to the key's list of 
+        # city values
+        if state in state_city_dict:
+            state_city_dict[state].append(city)
+
+    
+
+
+
+    # use filter with a lambda to check if the lists
+    # contain the same cities?
 
 if __name__ == "__main__": 
     start_time = time.perf_counter()  # Do not remove this line
@@ -96,6 +124,7 @@ if __name__ == "__main__":
     '''
 
     # code goes here
+    placeList = createPlaceList()
 
 
     '''
