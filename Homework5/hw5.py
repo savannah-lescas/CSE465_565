@@ -14,11 +14,13 @@ import time
 
 class SimplePlace:
     # constructor
-    def __init__(self, city, zipcode):
+    def __init__(self, city = "", zipcode = 0):
         self._city = city
         self._zipcode = zipcode
 
     # override equals at some point
+    def __eq__(self, other):
+        return self.get_zip() == other.get_zip()
     
     # getter for city
     def get_city(self):
@@ -70,7 +72,10 @@ class Place(SimplePlace):
 
 def createRecord(line):
     parts = line.split('\t')
-    return Place(parts[1], parts[3], parts[4], parts[6], parts[7])
+    check_null = lambda part: part.strip() if part.strip() else None
+    lat = check_null(parts[6])
+    lon = check_null(parts[7])
+    return Place(parts[1], parts[3], parts[4], lat, lon)
 
 def createPlaceList():
     # use map to apply a function to the lines
@@ -120,7 +125,21 @@ def commonCityNames(placeList):
         for city in common_cities:
             outputFile.write(city + '\n')
 
+def latLon(placeList):
+    latLonFile = open("LatLon.txt", "w")
+    with open("zips.txt", "r") as zips:
+        for zip in zips:
+            simpleZip = SimplePlace("", zip.strip())
+            for record in placeList:
+                if simpleZip == record:
+                    if record.get_lat() == None or record.get_lon() == None:
+                        continue
+                    else:
+                        latLonFile.write(record.get_lat() + " " + record.get_lon() + '\n')
+                        break
+    latLonFile.close()
 
+        
 if __name__ == "__main__": 
     start_time = time.perf_counter()  # Do not remove this line
     '''
@@ -131,6 +150,7 @@ if __name__ == "__main__":
     # code goes here
     placeList = createPlaceList()
     commonCityNames(placeList)
+    latLon(placeList)
 
 
     '''
