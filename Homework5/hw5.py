@@ -76,8 +76,7 @@ def createPlaceList():
     # use map to apply a function to the lines
     # from the file
     placeList = []
-    iFile = "zipcodes.txt"
-    zipcodeFile = open(iFile, "r")
+    zipcodeFile = open("zipcodes.txt", "r")
 
     # skip first line
     next(zipcodeFile)
@@ -91,30 +90,29 @@ def createPlaceList():
     
 def commonCityNames(placeList):
     state_city_dict = {}
-    iFile = "states.txt"
-    states = open(iFile, "r")
 
-    # add the states as keys to the dictionary
-    for state in states:
-        state_city_dict[state] = []
+    with open("states.txt", "r") as states:
+        # add the states as keys to the dictionary
+        for state in states:
+            state = state.strip()  # Remove leading/trailing whitespace
+            if state:  # Check if the line is not empty
+                state_city_dict[state] = set()
 
-    # go through every place object
-    for place in placeList:
-        state = place.get_state()
-        city = place.get_city()
+        # go through every place object
+        for place in placeList:
+            state = place.get_state().strip()
+            city = place.get_city().strip()
 
-        # if the state of the object is a key in the
-        # dictionary, add its city to the key's list of 
-        # city values
-        if state in state_city_dict:
-            state_city_dict[state].append(city)
-
-    
-
-
+            # if the state of the object is a key in the
+            # dictionary, add its city to the key's list of 
+            # city values
+            if state in state_city_dict.keys():
+                state_city_dict[state].add(city)
 
     # use filter with a lambda to check if the lists
-    # contain the same cities?
+    # contain the same cities
+
+
 
 if __name__ == "__main__": 
     start_time = time.perf_counter()  # Do not remove this line
@@ -125,6 +123,7 @@ if __name__ == "__main__":
 
     # code goes here
     placeList = createPlaceList()
+    commonCityNames(placeList)
 
 
     '''
