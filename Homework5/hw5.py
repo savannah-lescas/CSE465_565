@@ -20,7 +20,7 @@ class SimplePlace:
 
     # override ==
     def __eq__(self, other):
-        return self.get_zip() == other.get_zip()
+        return self.get_zip() == other.get_zip() or self.get_city().lower() == other.get_city().lower()
     
     # getter for city
     def get_city(self):
@@ -79,7 +79,7 @@ def createRecord(line):
     # lat and lon use the lambda to initialize its values
     lat = check_null(parts[6])
     lon = check_null(parts[7])
-    return Place(parts[1], parts[3], parts[4], lat, lon)
+    return Place(parts[1].strip(), parts[3].strip(), parts[4].strip(), lat, lon)
 
 def createPlaceList():
     # use map to apply a function to the lines
@@ -163,16 +163,20 @@ def cityStates(placeList):
     outFile = open("CityStates.txt", "w")
 
     for city in inFile:
+        # creates a list for the states that share the city name
         states = []
+        # strips the city name from the file
         strippedCity = city.strip()
-        states = [record.get_state() for record in placeList if record.get_city() == strippedCity]
+        # creates a SimplePlace object to use the == operator
+        simpleCity = SimplePlace(strippedCity, 0)
+        # list comprehension
+        states = [record.get_state() for record in placeList if record == simpleCity]
 
+        # still need to sort states
         for state in states:
             outFile.write(state + " ")
 
         outFile.write('\n')
-        
-
         
     inFile.close()
     outFile.close()
