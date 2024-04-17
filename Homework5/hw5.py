@@ -72,7 +72,11 @@ class Place(SimplePlace):
 
 def createRecord(line):
     parts = line.split('\t')
+    # lambda function that initializes the part to 'None'
+    # if there are no values
+    # RealPython.com told me that None is the equivalent of null
     check_null = lambda part: part.strip() if part.strip() else None
+    # lat and lon use the lambda to initialize its values
     lat = check_null(parts[6])
     lon = check_null(parts[7])
     return Place(parts[1], parts[3], parts[4], lat, lon)
@@ -126,17 +130,29 @@ def commonCityNames(placeList):
             outputFile.write(city + '\n')
 
 def latLon(placeList):
+    # opens the new file to write to
     latLonFile = open("LatLon.txt", "w")
+    # reads the zips.txt file to read from
     with open("zips.txt", "r") as zips:
+        # for every zipcode in zips.txt
         for zip in zips:
+            # create the SimplePlace object with the zip
             simpleZip = SimplePlace("", zip.strip())
+            # go through every record in placeList
             for record in placeList:
+                # use the overrided == method to check if the
+                # zipcodes match
                 if simpleZip == record:
+                    # if they match but the latitude or longitude is 'None'
+                    # keep looking
                     if record.get_lat() == None or record.get_lon() == None:
                         continue
+                    # otherwise, write the latitude and longitude to the
+                    # LatLon.txt file separated by a space
                     else:
                         latLonFile.write(record.get_lat() + " " + record.get_lon() + '\n')
                         break
+    # close LatLon.txt
     latLonFile.close()
 
         
