@@ -17,7 +17,6 @@ import time
 
 """
 still needs implemented:
-1- override a method
 3- variable positional argument
 4- yield
 """
@@ -29,7 +28,17 @@ class SimplePlace:
         self._zipcode = zipcode
 
     @staticmethod
-    def getParts(record):
+    def get_parts(record):
+        """
+        Puts the city and zipcode together in a string
+        separated by spaces and ending with a new line.
+
+        Args:
+            record (Place object): The record to get city 
+                and zip from.
+        Returns:
+            str: The city and zip separated by a space with a newline.
+        """
         return record.get_city() + " " + record.get_zip() + '\n'
 
     # override ==
@@ -61,7 +70,17 @@ class Place(SimplePlace):
 
     # overriding getParts from parent method
     @staticmethod
-    def getParts(record):
+    def get_parts(record):
+        """
+        Puts the latitude and longitude together in a string
+        separated by spaces and ending with a new line.
+
+        Args:
+            record (Place object): The record to get lat 
+                and lon from.
+        Returns:
+            str: The lat and lon separated by a space with a newline.
+        """
         return record.get_lat() + " " + record.get_lon() + '\n'
 
     # getter for state
@@ -89,7 +108,7 @@ class Place(SimplePlace):
         self._lon = value
 
 
-def createRecord(line):
+def create_record(line):
     parts = line.split('\t')
     # lambda function that initializes the part to 'None'
     # if there are no values
@@ -100,7 +119,21 @@ def createRecord(line):
     lon = check_null(parts[7])
     return Place(parts[1].strip(), parts[3].strip(), parts[4].strip(), lat, lon)
 
-def createPlaceList():
+# yield
+def create_place_list_yield(): 
+    """
+    A method that reads the zipcodes.txt file and yields
+    the record that is created on the line from the 
+    create_record method.
+    """
+    zipcode_file = open("zipcodes.txt", "r")
+
+    next(zipcode_file)
+
+    for line in zipcode_file:
+        yield create_record(line)
+
+def create_place_list():
     # use map to apply a function to the lines
     # from the file
     placeList = []
@@ -110,13 +143,14 @@ def createPlaceList():
     next(zipcodeFile)
     # uses map to apply the createRecord function on the 
     # zipcdoe file
-    placeList.extend(map(createRecord, zipcodeFile))
+    placeList.extend(map(create_record, zipcodeFile))
 
     zipcodeFile.close()
 
     return placeList
-    
-def commonCityNames(placeList):
+
+
+def common_city_names(place_list):
     state_city_dict = {}
 
     with open("states.txt", "r") as states:
@@ -128,7 +162,7 @@ def commonCityNames(placeList):
                 state_city_dict[state] = set()
 
         # go through every place object
-        for place in placeList:
+        for place in place_list:
             state = place.get_state()
             city = place.get_city()
 
@@ -145,24 +179,24 @@ def commonCityNames(placeList):
     # ChatGpt showed me how to use the union part
     common_cities = sorted(set(filter(is_common_city, set.union(*state_city_dict.values()))))
 
-    with open("ComonCityNames.txt", "w") as outputFile:
+    with open("ComonCityNames.txt", "w") as output_file:
         for city in common_cities:
-            outputFile.write(city + '\n')
+            output_file.write(city + '\n')
 
-def latLon(placeList):
+def lat_lon(place_list):
     # opens the new file to write to
-    latLonFile = open("LatLon.txt", "w")
+    lat_lon_file = open("LatLon.txt", "w")
     # reads the zips.txt file to read from
     with open("zips.txt", "r") as zips:
         # for every zipcode in zips.txt
         for zip in zips:
             # create the SimplePlace object with the zip
-            simpleZip = SimplePlace("", zip.strip())
+            simple_zip = SimplePlace("", zip.strip())
             # go through every record in placeList
-            for record in placeList:
+            for record in place_list:
                 # use the overrided == method to check if the
                 # zipcodes match
-                if simpleZip == record:
+                if simple_zip == record:
                     # if they match but the latitude or longitude is 'None'
                     # keep looking
                     if record.get_lat() == None or record.get_lon() == None:
@@ -170,34 +204,34 @@ def latLon(placeList):
                     # otherwise, write the latitude and longitude to the
                     # LatLon.txt file separated by a space
                     else:
-                        latLonFile.write(Place.getParts(record))
+                        lat_lon_file.write(Place.get_parts(record))
                         break
     # close LatLon.txt
-    latLonFile.close()
+    lat_lon_file.close()
 
-def cityStates(placeList):
+def city_states(place_list):
     # open the files for reading and writing
-    inFile = open("cities.txt", "r")
-    outFile = open("CityStates.txt", "w")
+    in_file = open("cities.txt", "r")
+    out_file = open("CityStates.txt", "w")
 
-    for city in inFile:
+    for city in in_file:
         # creates a list for the states that share the city name
         states = []
         # strips the city name from the file
-        strippedCity = city.strip()
+        stripped_city = city.strip()
         # creates a SimplePlace object to use the == operator
-        simpleCity = SimplePlace(strippedCity, 0)
+        simple_city = SimplePlace(stripped_city, 0)
         # list comprehension
-        states = sorted(set([record.get_state() for record in placeList if record == simpleCity]))
+        states = sorted(set([record.get_state() for record in place_list if record == simple_city]))
 
         # write the states to the file
         for state in states:
-            outFile.write(state + " ")
+            out_file.write(state + " ")
 
-        outFile.write('\n')
+        out_file.write('\n')
         
-    inFile.close()
-    outFile.close()
+    in_file.close()
+    out_file.close()
 
 
 if __name__ == "__main__": 
@@ -207,11 +241,10 @@ if __name__ == "__main__":
     -----------------------------------------------------------
     '''
 
-    # code goes here
-    placeList = createPlaceList()
-    commonCityNames(placeList)
-    latLon(placeList)
-    cityStates(placeList)
+    place_list = create_place_list()
+    common_city_names(place_list)
+    lat_lon(place_list)
+    city_states(place_list)
 
 
     '''
