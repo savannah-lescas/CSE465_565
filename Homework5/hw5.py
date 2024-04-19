@@ -18,7 +18,6 @@ import time
 """
 still needs implemented:
 1- override a method
-2- filter
 3- variable positional argument
 4- yield
 """
@@ -28,6 +27,10 @@ class SimplePlace:
     def __init__(self, city = "", zipcode = 0):
         self._city = city
         self._zipcode = zipcode
+
+    @staticmethod
+    def getParts(record):
+        return record.get_city() + " " + record.get_zip() + '\n'
 
     # override ==
     def __eq__(self, other):
@@ -55,6 +58,11 @@ class Place(SimplePlace):
         self._state = state
         self._lat = lat
         self._lon = lon
+
+    # overriding getParts from parent method
+    @staticmethod
+    def getParts(record):
+        return record.get_lat() + " " + record.get_lon() + '\n'
 
     # getter for state
     def get_state(self):
@@ -162,7 +170,7 @@ def latLon(placeList):
                     # otherwise, write the latitude and longitude to the
                     # LatLon.txt file separated by a space
                     else:
-                        latLonFile.write(record.get_lat() + " " + record.get_lon() + '\n')
+                        latLonFile.write(Place.getParts(record))
                         break
     # close LatLon.txt
     latLonFile.close()
