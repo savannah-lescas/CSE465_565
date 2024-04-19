@@ -11,6 +11,17 @@ import time
   because your instructor will run the hw5.py file to execute and evaluate 
   your work.
 """
+# => I’m competing for BONUS Points <=
+
+
+
+"""
+still needs implemented:
+1- override a method
+2- filter
+3- variable positional argument
+4- yield
+"""
 
 class SimplePlace:
     # constructor
@@ -119,11 +130,12 @@ def commonCityNames(placeList):
             if state in state_city_dict.keys():
                 state_city_dict[state].add(city)
 
-    # use filter with a lambda to check if the lists
-    # contain the same cities
-    common_cities = set()
-
-    # sort the common cities set
+    # use filter with a lambda to get a list of common
+    # city names
+    # StackOverflow showed me to use all()
+    is_common_city = lambda city: all(city in cities for cities in state_city_dict.values())
+    # ChatGpt showed me how to use the union part
+    common_cities = sorted(set(filter(is_common_city, set.union(*state_city_dict.values()))))
 
     with open("ComonCityNames.txt", "w") as outputFile:
         for city in common_cities:
@@ -156,8 +168,6 @@ def latLon(placeList):
     latLonFile.close()
 
 def cityStates(placeList):
-    # try using list comprehension
-
     # open the files for reading and writing
     inFile = open("cities.txt", "r")
     outFile = open("CityStates.txt", "w")
@@ -170,9 +180,9 @@ def cityStates(placeList):
         # creates a SimplePlace object to use the == operator
         simpleCity = SimplePlace(strippedCity, 0)
         # list comprehension
-        states = [record.get_state() for record in placeList if record == simpleCity]
+        states = sorted(set([record.get_state() for record in placeList if record == simpleCity]))
 
-        # still need to sort states
+        # write the states to the file
         for state in states:
             outFile.write(state + " ")
 
