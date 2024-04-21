@@ -13,16 +13,24 @@ import time
 """
 # => I’m competing for BONUS Points <=
 
-
-
-"""
-still needs implemented:
-3- variable positional argument
-"""
-
 class SimplePlace:
-    # constructor
+    """
+    This class is a super class that represents a place
+    with only the city and zipcode.
+
+    Attributes:
+        city (string): The city of the place.
+        zipcode (int): The zipcode of the place.
+    """
+
     def __init__(self, city = "", zipcode = 0):
+        """
+        Initializes a SimplePlace with the given values.
+
+        Args:
+            city (string, optional): The city of the place (default is "").
+            zipcode (int, optional): The zipcode of the place (default is 0).
+        """
         self._city = city
         self._zipcode = zipcode
 
@@ -42,26 +50,83 @@ class SimplePlace:
 
     # override ==
     def __eq__(self, other):
+        """
+        Checks if the object's zipcode or city is equal
+        to another's.
+
+        Args:
+            other (SimplePlace): The SimplePlace to compare with.
+
+        Returns:
+            bool: True if the zipcodes are equal or cities are equal.
+            False otherwise.
+        """
         return self.get_zip() == other.get_zip() or self.get_city().lower() == other.get_city().lower()
     
     # getter for city
     def get_city(self):
+        """
+        Returns the city.
+
+        Returns:
+            str: The city.
+        """
         return self._city
     
     # setter for city
     def set_city(self, value):
+        """
+        Sets the value for city with a given string.
+
+        Args:
+            value (str): The new value for city.
+        """
         self._city = value
 
     # getter for zipcode
     def get_zip(self):
+        """
+        Returns the zipcode.
+
+        Returns:
+            int: The zipcode.
+        """
         return self._zipcode
     
     # setter for zipcode
     def set_zip(self, value):
+        """
+        Sets the value for zipcode with a given int.
+
+        Args:
+            value (int): The new value for zipcode.
+        """
         self._zipcode = value
 
 class Place(SimplePlace):
+    """
+    This class is a sub class that represents a place
+    with all values.
+
+    Attributes:
+        zipcode (int): The zipcode of the place (from superclass)
+        city (string): The city of the place (from superclass).
+        state (str): The state of the place.
+        lat (double, float, or None): The latituade of the place.
+        lon (double, float, or None): The longitude of the place.
+    """
     def __init__(self, zipcode, city, state, lat, lon):
+        """
+        Initializes a Place with the given values.
+
+        Args:
+            city (string, optional): The city of the place (default is "").
+            zipcode (int, optional): The zipcode of the place (default is 0).
+            state (str): The state of the place.
+            lat (float, double, or None): The latitude of the place.
+            lon (float, double, or None): The longitude of the place.
+        """
+        # initializes city and zipcode using super class
         SimplePlace.__init__(self, city, zipcode)
         self._state = state
         self._lat = lat
@@ -84,31 +149,81 @@ class Place(SimplePlace):
 
     # getter for state
     def get_state(self):
-      return self._state
+        """
+        Returns the state.
+
+        Returns:
+            str: The state.
+        """
+        return self._state
 
     # setter for state
     def set_state(self, value):
+        """
+        Sets the value for state with a given string.
+
+        Args:
+            value (str): The new value for state.
+        """
         self._state = value
 
     # getter for latitude
     def get_lat(self):
+        """
+        Returns the lat.
+
+        Returns:
+            double, float, None: The latitude.
+        """
         return self._lat
 
     # setter for latitude
     def set_lat(self, value):
+        """
+        Sets the value for lat with a given input.
+
+        Args:
+            value (double, float, None): The new value for lat.
+        """
         self._lat = value
 
     # getter for longitude
     def get_lon(self):
+        """
+        Returns the lon.
+
+        Returns:
+            double, float, None: The longitude.
+        """
         return self._lon
 
     # setter for longitude
     def set_lon(self, value):
+        """
+        Sets the value for lon with a given input.
+
+        Args:
+            value (double, float, None): The new value for lon.
+        """
         self._lon = value
 
+# variable positional argument
+def create_record(*parts):
+    """
+    A method that gets a variable positional argument as its input,
+    if there are at least 8 arguments it will next initialize lat 
+    and lon variables depending on if they are filled or not (None
+    if empty), then returns a filled Place object.
 
-def create_record(line):
-    parts = line.split('\t')
+    Args:
+        *parts (list of strings): A variable positional argument 
+        that can have any number of strings.
+
+    Returns:
+        A new, filled Place object.
+    """
+    if len(parts) < 8:
+        return None
     # lambda function that initializes the part to 'None'
     # if there are no values
     # RealPython.com told me that None is the equivalent of null
@@ -116,6 +231,7 @@ def create_record(line):
     # lat and lon use the lambda to initialize its values
     lat = check_null(parts[6])
     lon = check_null(parts[7])
+    # initialize the Place object and return it
     return Place(parts[1].strip(), parts[3].strip(), parts[4].strip(), lat, lon)
 
 # yield
@@ -124,32 +240,67 @@ def create_place_list_yield():
     A method that reads the zipcodes.txt file and yields
     the record that is created on the line from the 
     create_record method.
+
+    Returns:
+        Yields the record.
     """
+    # opens the file
     zipcode_file = open("zipcodes.txt", "r")
 
+    # skips the first line
     next(zipcode_file)
 
+    # for every line in the file create the record
+    # based on the line and yield it
     for line in zipcode_file:
         yield create_record(line)
 
+    # close the file
+    zipcode_file.close()
+
 def create_place_list():
+    """
+    A method that returns a list of all the Place objects 
+    by using the create_record method on the list of parts
+    from each line of the zipcodes.txt file.
+
+    Returns:
+        place_list: A list of all Place objects created 
+        from the lines in zipcodes.txt.
+    """
     # use map to apply a function to the lines
     # from the file
-    placeList = []
-    zipcodeFile = open("zipcodes.txt", "r")
+    place_list = []
+    zipcode_file = open("zipcodes.txt", "r")
 
     # skip first line
-    next(zipcodeFile)
-    # uses map to apply the createRecord function on the 
-    # zipcdoe file
-    placeList.extend(map(create_record, zipcodeFile))
+    next(zipcode_file)
 
-    zipcodeFile.close()
+    # since the line could have different numbers
+    # of elements, we use a variable positional 
+    # argument
+    # uses map to add to the place list with the
+    # create_record function on each line from 
+    # the zipcode file
+    place_list.extend(map(lambda line: create_record(*line.split('\t')), zipcode_file))
 
-    return placeList
+    zipcode_file.close()
+
+    return place_list
 
 
 def common_city_names(place_list):
+    """
+    A method that reads through the states from states.txt,
+    stores them as keys in state_city_dict, then goes through
+    every Place object and adds the city name to the set of 
+    values to the particular state if it is a key in the 
+    dictionary, then goes through every value checking for
+    city names that are common to both of the states.
+
+    Args:
+        place_list: The list of Place objects.
+    """
     state_city_dict = {}
 
     with open("states.txt", "r") as states:
@@ -236,6 +387,16 @@ def write_to_lat_lon(place_list):
             lat_lon_file.write(lat_lon)
 
 def lat_lon(place_list):
+    """
+    A method that reads the zips.txt file and for each 
+    zipcode in there, it searches for the record that has
+    a matching zipcode, and if it does checks that it is
+    not 'None' and then prints it to the LatLon.txt file
+    only once.
+
+    Args:
+        place_list: The list of Place objects. 
+    """
     # opens the new file to write to
     lat_lon_file = open("LatLon.txt", "w")
     # reads the zips.txt file to read from
@@ -262,6 +423,15 @@ def lat_lon(place_list):
     lat_lon_file.close()
 
 def city_states(place_list):
+    """
+    A method that reads through cities.txt, and for each city
+    in the file, and checks every state to see if it has that
+    city name, if it does add it to a list then append the list
+    to the file on a line.
+
+    Args:
+        place_list: The list of Place objects.
+    """
     # open the files for reading and writing
     in_file = open("cities.txt", "r")
     out_file = open("CityStates.txt", "w")
@@ -293,7 +463,9 @@ if __name__ == "__main__":
     -----------------------------------------------------------
     '''
 
+    # create the place list
     place_list = create_place_list()
+    # call all the methods to perform tasks
     common_city_names(place_list)
     lat_lon(place_list)
     city_states(place_list)
