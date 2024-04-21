@@ -18,7 +18,6 @@ import time
 """
 still needs implemented:
 3- variable positional argument
-4- yield
 """
 
 class SimplePlace:
@@ -182,6 +181,59 @@ def common_city_names(place_list):
     with open("ComonCityNames.txt", "w") as output_file:
         for city in common_cities:
             output_file.write(city + '\n')
+
+# another method using yield in case the other one doesn't
+# count
+def lat_lon_yield(place_list):
+    """
+    A method that goes through the given zips.txt file
+    and compares the zipcodes from the file to all the
+    zipcodes in place_list and if they are equal checks 
+    if there are values in the lat lon spot, if not 
+    continues to check to find filled lat lon values
+    and once it does it yields the string of lat and
+    lon string from the get_parts method of the Place
+    class and then stops searching for that zipcode's 
+    lat and lon values and continues on with the loop.
+
+    Args:
+        place_list: the list of all records.
+
+    Returns:
+        yields the lat and lon in string form.
+    """
+    # reads the zips.txt file to read from
+    with open("zips.txt", "r") as zips:
+        # for every zipcode in zips.txt
+        for zip in zips:
+            # create the SimplePlace object with the zip
+            simple_zip = SimplePlace("", zip.strip())
+            # go through every record in placeList
+            for record in place_list:
+                # use the overrided == method to check if the
+                # zipcodes match
+                if simple_zip == record:
+                    # if they match but the latitude or longitude is 'None'
+                    # keep looking
+                    if record.get_lat() == None or record.get_lon() == None:
+                        continue
+                    # otherwise, write the latitude and longitude to the
+                    # LatLon.txt file separated by a space
+                    else:
+                        yield(Place.get_parts(record))
+                        break
+
+def write_to_lat_lon(place_list):
+    """
+    A method that takes the yields from lat_lon_yield
+    and prints them to LatLon.txt.
+
+    Args:
+        place_list: list of all the records.
+    """
+    with open("LatLon.txt", "w") as lat_lon_file:
+        for lat_lon in lat_lon_yield(place_list):
+            lat_lon_file.write(lat_lon)
 
 def lat_lon(place_list):
     # opens the new file to write to
