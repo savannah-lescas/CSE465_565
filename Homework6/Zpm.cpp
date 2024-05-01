@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <regex>
 
 using namespace std;
 
@@ -38,6 +39,59 @@ class Interpreter {
             filename = file_name;
             variables = {};
             lineNumber = 0;
+        }
+
+        
+        vector<stringPair> lexicalAnalysis(string line) {
+            vector<stringPair> tokens;
+            
+            // ChatGPT for loop and tok_type/tok_regex
+            for (const auto& pair : TOKEN_SPECIFICATION) { 
+                const std::string& tok_type = pair.first;
+                const std::string& tok_regex = pair.second;
+                
+                // keeps track of what has been read and what hasn't
+                int pos = 0;
+
+                // same as re.compile
+                regex regex(tok_regex);
+
+                while (pos < line.length()) {
+                    // keeps track of the string to check
+                    // with pos as the position that gets updated
+                    // once something is read, the new string will
+                    // not include what is already read
+                    string substring = line.substr(pos);
+                    // smatch holds information about the regex_search call
+                    // can tell us about the substrings and positions
+                    smatch match;
+                    // using regex_search becasue regex_match gives true or false
+                    // when we need actual information
+                    if (regex_search(substring, match, regex)) { // ChatGpt for regex_search 
+                        if (tok_type != "ws" && tok_type != "NEWLN") {
+                            // retrieves the matches string
+                            string matchedToken = match.str(0);
+                            // adds the token type with the token to the token vector
+                            tokens.push_back({tok_type, matchedToken});
+                        }
+
+                        // updates position 
+                        pos += match.length();
+                        
+                        // this condition is to stop checking the rest of the line
+                        // once we find either an integer variable or string variable
+                        // and then , we start looking for the next pattern on the line
+                        if (tok_type == "INT_VAR" || tok_type == "STR_VAR") {
+                            break;
+                        }
+                    } else {
+                        pos += 1;
+                    }
+                }
+
+            }
+
+            return tokens;
         }
 
 };
