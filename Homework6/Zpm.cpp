@@ -115,14 +115,29 @@ class Interpreter {
                     it++;
                     string semicolon = it->second;
 
+                    auto value;
                     if (valueToken.first == "NUMBER") {
-                        int value = stoi(valueToken.second);
+                        value = stoi(valueToken.second);
                     } else if (valueToken.first == "STRING") {
-                        string value = strip(valueToken.second);
+                        value = strip(valueToken.second);
                     } else {
-                        auto value = variables[valueToken.first];
+                        value = variables[valueToken.first];
                     }
 
+                    try {
+                        if (opToken == "=") {
+                            variables[varName] == value;
+                        } else if (opToken == "+=") {
+                            variables[varName] += value;
+                        } else if (opToken == "-=") {
+                            variables[varName] -= value;
+                        } else if (opToken == "*="){
+                            variables[varName] *= value;
+                        }
+                    } catch (...) {
+                        cout << "Error in line: " << this.line_number << endl;
+                        exit(1);
+                    }
                 }
             }
 
