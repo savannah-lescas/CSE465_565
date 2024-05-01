@@ -115,7 +115,7 @@ class Interpreter {
                     it++;
                     string semicolon = it->second;
 
-                    auto value;
+                    auto value = T{};
                     if (valueToken.first == "NUMBER") {
                         value = stoi(valueToken.second);
                     } else if (valueToken.first == "STRING") {
@@ -140,16 +140,21 @@ class Interpreter {
                     }
                 }
             }
+        }
 
+        void run() {
+            this.line_number = 0;
+            string line;
+            ifstream inputFile(filename);
+            while (getline(inputFile, line)) {
+                this.line_number++;
 
+                vector<stringPair> tokens = this.lexicalAnalysis(line);
+                this.parse(tokens);
+            }
         }
 
 };
-
-//template<typename Value>
-//unordered_map<string, Value> assignments;
-int lineNumber = 0;
-
 
 
 int main (int argc, char *argv[]) {
@@ -174,7 +179,13 @@ int main (int argc, char *argv[]) {
         exit(1);
     }
     
-    Interpreter interpreter(filename);
+    // uh oh. this is where I am going to have issues...
+    Interpreter<string> interpreter(filename);
+
+    unordered_map<string, string>::iterator it = interpreter.variables.begin();
+    while (it != interpreter.variables.end()) {
+        cout << it->first << "=" << it->second << endl;
+    }
 
     return (0);
 }
