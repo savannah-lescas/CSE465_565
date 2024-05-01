@@ -10,12 +10,19 @@
 using namespace std;
 
 typedef pair<string, string> stringPair;
-typedef unordered_map<string, string> dictionary;
 
+string strip(string unStrippedString) {
+    string strippedString = "";
+    if (unStrippedString.size() >= 2 && unStrippedString.front() == '"' && unStrippedString.back() == '"') {
+        strippedString = unStrippedString.substr(1, unStrippedString.size() - 2);
+    } 
+    return strippedString;
+}
+template<typename T>
 class Interpreter {
     public:
         string filename;
-        dictionary variables; // made need to make the type generic for var
+        unordered_map<string, T> variables; // made need to make the type generic for var
         int lineNumber = 0;
 
         // Define the token specification
@@ -92,6 +99,34 @@ class Interpreter {
             }
 
             return tokens;
+        }
+
+        void parse(vector<stringPair> tokens) {
+            vector<stringPair>::iterator it;
+
+            for (it = tokens.begin(); it != tokens.end(); it++) {
+                if (it->first == "INT_VAR" || it->second == "STR_VAR") {
+                    string varName = it->second;
+                    it++;
+                    it++;
+                    string opToken = it->second;
+                    it++;
+                    stringPair valueToken(it->first, it->second);
+                    it++;
+                    string semicolon = it->second;
+
+                    if (valueToken.first == "NUMBER") {
+                        int value = stoi(valueToken.second);
+                    } else if (valueToken.first == "STRING") {
+                        string value = strip(valueToken.second);
+                    } else {
+                        auto value = variables[valueToken.first];
+                    }
+
+                }
+            }
+
+
         }
 
 };
