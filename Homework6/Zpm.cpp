@@ -79,6 +79,15 @@ string getRidOfQuotes(string quoted) {
     return noQuotes;
 }
 
+bool checkVarName(string varName) {
+    for (size_t i = 0; i < varName.length(); i++) {
+        if (!(varName[i] >= 'A' && varName[i] <= 'Z') || varName.length() > 1) {
+            return false;
+        }
+    }
+    return true;
+}
+
 int main (int argc, char *argv[]) {
     string filename = "";
     if(argc == 2) {
