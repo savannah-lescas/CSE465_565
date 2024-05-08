@@ -59,6 +59,16 @@ void initialize(string first, string second, string third, string fourth, unorde
     }
 }
 
+void print(string variableName, unordered_map<string, string> variables, int lineNumber) {
+    auto search = variables.find(variableName);
+    if (search != variables.end()) {
+        cout << variableName << "=" << search->second << endl;
+    } else {
+        cout << "RUNTIME ERROR: line " << lineNumber << endl;
+        exit(1);
+    }
+}
+
 int main (int argc, char *argv[]) {
     string filename = "";
     if(argc == 2) {
