@@ -8,23 +8,85 @@
 #include <regex>
 
 using namespace std;
-template<typename T>
 
-void doAssignments(vector<string> input) {
-    string firstInstruction = input[0];
+bool isInt(string input) {
+    regex pattern("-?(0|[1-9]\\d*)");
 
-    if (firstInstruction == "FOR") {
-        //loop(input);
-    } else if (firstInstruction == "PRINT") {
-        //print(input[1]);
-    } else {
-        try {
-            //instruction(input);
-        } catch (...) {
-            cout << "Error" << endl;
+    return regex_match(input, pattern);
+}
+
+bool checkVarName(string varName) {
+    regex pattern("^[a-zA-Z][\\w$]*$");
+
+    return regex_match(varName, pattern);
+
+}
+
+
+string getRidOfQuotes(string quoted) {
+    string noQuotes = "";
+    for (size_t i = 0; i < quoted.length(); i++) {
+        if (quoted[i] != '"') {
+            noQuotes += quoted[i];
         }
     }
+    return noQuotes;
 }
+
+void print(string variableName, unordered_map<string, string> variables, int lineNumber) {
+    auto search = variables.find(variableName);
+    if (search != variables.end()) {
+        cout << variableName << "=" << search->second << endl;
+    } else {
+        cout << "RUNTIME ERROR: line " << lineNumber << endl;
+        exit(1);
+    }
+}
+
+void initialize(string first, string second, string third, string fourth, unordered_map<string, string> variables) {
+    auto search = variables.find(third);
+    if (search != variables.end()) {
+        string value = search->second;
+        variables[first] = value;
+    } else {
+        variables[first] = third;
+        // idk maybe add some stuff here
+    }
+}
+
+void compoundAssignments(string variableName, string op, string right, unordered_map<string, string> variables, int lineNumber) {
+    auto search = variables.find(variableName);
+    if (search != variables.end()) {
+        string left = search->second;
+        if (!isInt(left) && !isInt(right)) {
+            if (op == "+=") {
+                variables[variableName] = left + right;
+            }
+        } else if (!isInt(left) && isInt(right)
+            || isInt(left) && !isInt(right)) {
+                cout << "RUNTIME ERROR: line " << lineNumber << endl;
+                exit(1);
+        } else {
+            int leftInt = stoi(left);
+            int rightInt = stoi(right);
+            if (op == "+=") {
+                variables[variableName] = leftInt + rightInt;
+            } else if (op == "-=") {
+                variables[variableName] = leftInt - rightInt;
+            } else if (op == "*=") {
+                variables[variableName] = leftInt * rightInt;
+            } else {
+                cout << "RUNTIME ERROR: line " << lineNumber << endl;
+                exit(1);
+            }
+
+        }
+    } else {
+        cout << "RUNTIME ERROR: line " << lineNumber << endl;
+        exit(1);
+    }
+}
+
 
 void instruction(vector<string> input, unordered_map<string, string> variables, int lineNumber) {
     if (input[1] == "=") {
@@ -50,83 +112,22 @@ void instruction(vector<string> input, unordered_map<string, string> variables, 
     }
 }
 
-void compoundAssignments(string variableName, string op, string right, unordered_map<string, string> variables, int lineNumber) {
-    auto search = variables.find(variableName);
-        if (search != variables.end()) {
-            string left = search->second;
-            if (!isInt(left) && !isInt(right)) {
-                if (op == "+=") {
-                    variables[variableName] = left + right;
-                }
-            } else if (!isInt(left) && isInt(right)
-                || isInt(left) && !isInt(right)) {
-                    cout << "RUNTIME ERROR: line " << lineNumber << endl;
-                    exit(1);
-            } else {
-                int leftInt = stoi(left);
-                int rightInt = stoi(right);
-                if (op == "+=") {
-                    variables[variableName] = leftInt + rightInt;
-                } else if (op == "-=") {
-                    variables[variableName] = leftInt - rightInt;
-                } else if (op == "*=") {
-                    variables[variableName] = leftInt * rightInt;
-                } else {
-                    cout << "RUNTIME ERROR: line " << lineNumber << endl;
-                    exit(1);
-                }
+// still need to implement loop
 
-            }
-        } else {
-            cout << "RUNTIME ERROR: line " << lineNumber << endl;
-            exit(1);
-        }
-}
+void doAssignments(vector<string> input, unordered_map<string, string> variables, int lineNumber) {
+    string firstInstruction = input[0];
 
-void initialize(string first, string second, string third, string fourth, unordered_map<string, string> variables) {
-    auto search = variables.find(third);
-    if (search != variables.end()) {
-        string value = search->second;
-        variables[first] = value;
+    if (firstInstruction == "FOR") {
+        //loop(input);
+    } else if (firstInstruction == "PRINT") {
+        print(input[1], variables, lineNumber);
     } else {
-        variables[first] = third;
-        // idk maybe add some stuff here
-    }
-}
-
-void print(string variableName, unordered_map<string, string> variables, int lineNumber) {
-    auto search = variables.find(variableName);
-    if (search != variables.end()) {
-        cout << variableName << "=" << search->second << endl;
-    } else {
-        cout << "RUNTIME ERROR: line " << lineNumber << endl;
-        exit(1);
-    }
-}
-
-string getRidOfQuotes(string quoted) {
-    string noQuotes = "";
-    for (size_t i = 0; i < quoted.length(); i++) {
-        if (quoted[i] != '"') {
-            noQuotes += quoted[i];
+        try {
+            instruction(input, variables, lineNumber);
+        } catch (...) {
+            cout << "Error" << endl;
         }
     }
-    return noQuotes;
-}
-
-bool checkVarName(string varName) {
-    for (size_t i = 0; i < varName.length(); i++) {
-        if (!(varName[i] >= 'A' && varName[i] <= 'Z') || varName.length() > 1) {
-            return false;
-        }
-    }
-    return true;
-}
-
-bool isInt(string input) {
-    std::regex pattern("-?(0|[1-9]\\d*)");
-
-    return regex_match(input, pattern);
 }
 
 int main (int argc, char *argv[]) {
@@ -153,6 +154,19 @@ int main (int argc, char *argv[]) {
 
     unordered_map<string, string> variables;
     int lineNumber = 0;
+    string line;
+    vector<string> input;
+    regex pattern("(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)\\s+");
+    while (getline(inputFile, line)) {
+        lineNumber++;
+        string s;
+        stringstream ss(line);
+        while (getline(ss, s, ' ')) {
+            input.push_back(s);
+        }
+
+        doAssignments(input, variables, lineNumber);
+    }
 
     return (0);
 }
