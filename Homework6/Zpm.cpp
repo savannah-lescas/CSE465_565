@@ -48,6 +48,16 @@ void instruction(vector<string> input, unordered_map<string, string> variables, 
     }
 }
 
+void initialize(string first, string second, string third, string fourth, unordered_map<string, string> variables) {
+    auto search = variables.find(third);
+    if (search != variables.end()) {
+        string value = search->second;
+        variables[first] = value;
+    } else {
+        variables[first] = third;
+        // idk maybe add some stuff here
+    }
+}
 
 int main (int argc, char *argv[]) {
     string filename = "";
