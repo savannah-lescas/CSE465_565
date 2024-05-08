@@ -26,18 +26,18 @@ class Interpreter {
         int lineNumber = 0;
 
         // Define the token specification
-         vector<stringPair> TOKEN_SPECIFICATION = {
+        vector<stringPair> TOKEN_SPECIFICATION = {
             {"INT_VAR",     "[a-zA-Z_][a-zA-Z_0-9]*\\s"},                   // Integer variable (lookahead for assignment and operations)
             {"STR_VAR",     "[a-zA-Z_][a-zA-Z_0-9]*\\s"},                   // String variable (lookahead for assignment and addition)
-            {"ASSIGN",      "(?<=\\s)\\=(?=\\s)"},                           // Assignment operator
-            {"PLUS_ASSIGN", "(?<=\\s)\\+=(?=\\s)"},                          // Addition assignment operator
-            {"MINUS_ASSIGN","(?<=\\s)-=(?=\\s)"},                            // Subtraction assignment operator
-            {"MULT_ASSIGN", "(?<=\\s)\\*=(?=\\s)"},                          // Multiplication assignment operator
-            {"INT_VAR_VAL", "(?<=\\+=|-=|\\*=)\\s[a-zA-Z_][a-zA-Z_0-9]*"},    // Integer variable (lookahead for assignment and operations)
-            {"STR_VAR_VAL", "(?<=\\+=)\\s[a-zA-Z_][a-zA-Z_0-9]*"},           // String variable (lookahead for assignment and addition)
-            {"NUMBER",      "(?<=\\s)-?\\d+(?=\\s)"},                         // Integer literal
+            {"ASSIGN",      "(\\s)=\\s"},                           // Assignment operator
+            {"PLUS_ASSIGN", "(\\s)\\+=\\s"},                          // Addition assignment operator
+            {"MINUS_ASSIGN","(\\s)-=\\s"},                            // Subtraction assignment operator
+            {"MULT_ASSIGN", "(\\s)\\*=\\s"},                          // Multiplication assignment operator
+            {"INT_VAR_VAL", "(\\+=|-=|\\*=)\\s[a-zA-Z_][a-zA-Z_0-9]*"},    // Integer variable (lookahead for assignment and operations)
+            {"STR_VAR_VAL", "(\\+=)\\s[a-zA-Z_][a-zA-Z_0-9]*"},           // String variable (lookahead for assignment and addition)
+            {"NUMBER",      "(\\s)-?\\d+\\s"},                         // Integer literal
             {"STRING",      "\"[^\"]*\""},                                   // String literal, handling quotes
-            {"SEMICOLON",   "(?<=\\s);"},                                    // Statement terminator
+            {"SEMICOLON",   "(\\s);"},                                    // Statement terminator
             {"WS",          "\\s+"},                                        // Whitespace
             {"NEWLN",       "\\n"}
         };
@@ -59,10 +59,11 @@ class Interpreter {
                 
                 // keeps track of what has been read and what hasn't
                 int pos = 0;
-
+                cout << "in loop" << endl;
+                
                 // same as re.compile
                 regex regex(tok_regex);
-
+                /*
                 while (pos < line.length()) {
                     // keeps track of the string to check
                     // with pos as the position that gets updated
@@ -95,9 +96,9 @@ class Interpreter {
                         pos += 1;
                     }
                 }
-
+                */
             }
-
+            
             return tokens;
         }
 
@@ -126,16 +127,16 @@ class Interpreter {
 
                     try {
                         if (opToken == "=") {
-                            variables[varName] == value;
+                            variables[varName] = value;
                         } else if (opToken == "+=") {
                             variables[varName] += value;
-                        } else if (opToken == "-=") {
+                        } /*else if (opToken == "-=") {
                             variables[varName] -= value;
                         } else if (opToken == "*="){
                             variables[varName] *= value;
-                        }
+                        }*/
                     } catch (...) {
-                        cout << "Error in line: " << this.line_number << endl;
+                        cout << "Error in line: " << lineNumber << endl;
                         exit(1);
                     }
                 }
@@ -143,14 +144,14 @@ class Interpreter {
         }
 
         void run() {
-            this.line_number = 0;
+            lineNumber = 0;
             string line;
             ifstream inputFile(filename);
             while (getline(inputFile, line)) {
-                this.line_number++;
+                lineNumber++;
 
-                vector<stringPair> tokens = this.lexicalAnalysis(line);
-                this.parse(tokens);
+                vector<stringPair> tokens = lexicalAnalysis(line);
+                //parse(tokens);
             }
         }
 
@@ -179,13 +180,25 @@ int main (int argc, char *argv[]) {
         exit(1);
     }
     
-    // uh oh. this is where I am going to have issues...
-    Interpreter<string> interpreter(filename);
-
-    unordered_map<string, string>::iterator it = interpreter.variables.begin();
-    while (it != interpreter.variables.end()) {
-        cout << it->first << "=" << it->second << endl;
+    Interpreter<string> interpreter(filename); // Assuming string as the type for variables
+    
+    interpreter.run(); // This will parse the file and populate the variables map
+    
+    // Print variables and their values
+    /*
+    for (const auto& variable : interpreter.variables) {
+        cout << variable.first << " = ";
+        // Check if the value is an integer
+        try {
+            int intValue = stoi(variable.second);
+            cout << intValue;
+        } catch (const std::invalid_argument&) {
+            // If stoi throws an exception, the value is not an integer
+            cout << variable.second; // Assume it's a string
+        }
+        cout << endl;
     }
+    */
 
     return (0);
 }
