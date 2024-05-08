@@ -9,8 +9,6 @@
 
 using namespace std;
 template<typename T>
-unordered_map<string, T> variables;
-int lineNumber = 0;
 
 void doAssignments(vector<string> input) {
     string firstInstruction = input[0];
@@ -24,6 +22,28 @@ void doAssignments(vector<string> input) {
             //instruction(input);
         } catch (...) {
             cout << "Error" << endl;
+        }
+    }
+}
+
+void instruction(vector<string> input, unordered_map<string, string> variables, int lineNumber) {
+    if (input[1] == "=") {
+        if (input.size() < 4 || input[2] == ";") {
+            cout << "RUNTIME ERROR: line " << lineNumber << endl;
+            exit(1);
+        } else {
+            if (checkVarName(input[0])) {
+                initialize(input[0], input[1], input[2], input[3]);
+            } else {
+                cout << "RUNTIME ERROR: line " << lineNumber << endl;
+                exit(1);
+            }
+        }
+    } else {
+        if (variables.find(input[2]) != variables.end()) {
+            compoundAssignments(input[0], input[1], variables.find(input[2]));
+        } else {
+            compoundAssignments(input[0], input[1], getRidOfQuotes(input[2]));
         }
     }
 }
@@ -50,6 +70,9 @@ int main (int argc, char *argv[]) {
         cout << "File could not be opened" << endl;
         exit(1);
     }
+
+    unordered_map<string, string> variables;
+    int lineNumber = 0;
 
     return (0);
 }
