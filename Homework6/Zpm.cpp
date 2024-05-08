@@ -69,6 +69,16 @@ void print(string variableName, unordered_map<string, string> variables, int lin
     }
 }
 
+string getRidOfQuotes(string quoted) {
+    string noQuotes = "";
+    for (size_t i = 0; i < quoted.length(); i++) {
+        if (quoted[i] != '"') {
+            noQuotes += quoted[i];
+        }
+    }
+    return noQuotes;
+}
+
 int main (int argc, char *argv[]) {
     string filename = "";
     if(argc == 2) {
