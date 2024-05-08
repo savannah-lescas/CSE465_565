@@ -33,19 +33,54 @@ void instruction(vector<string> input, unordered_map<string, string> variables, 
             exit(1);
         } else {
             if (checkVarName(input[0])) {
-                initialize(input[0], input[1], input[2], input[3]);
+                initialize(input[0], input[1], input[2], input[3], variables);
             } else {
                 cout << "RUNTIME ERROR: line " << lineNumber << endl;
                 exit(1);
             }
         }
     } else {
-        if (variables.find(input[2]) != variables.end()) {
-            compoundAssignments(input[0], input[1], variables.find(input[2]));
+        auto search = variables.find(input[2]);
+        if (search != variables.end()) {
+            string value = search->second;
+            compoundAssignments(input[0], input[1], value, variables, lineNumber);
         } else {
-            compoundAssignments(input[0], input[1], getRidOfQuotes(input[2]));
+            compoundAssignments(input[0], input[1], getRidOfQuotes(input[2]), variables, lineNumber);
         }
     }
+}
+
+void compoundAssignments(string variableName, string op, string right, unordered_map<string, string> variables, int lineNumber) {
+    auto search = variables.find(variableName);
+        if (search != variables.end()) {
+            string left = search->second;
+            if (!isInt(left) && !isInt(right)) {
+                if (op == "+=") {
+                    variables[variableName] = left + right;
+                }
+            } else if (!isInt(left) && isInt(right)
+                || isInt(left) && !isInt(right)) {
+                    cout << "RUNTIME ERROR: line " << lineNumber << endl;
+                    exit(1);
+            } else {
+                int leftInt = stoi(left);
+                int rightInt = stoi(right);
+                if (op == "+=") {
+                    variables[variableName] = leftInt + rightInt;
+                } else if (op == "-=") {
+                    variables[variableName] = leftInt - rightInt;
+                } else if (op == "*=") {
+                    variables[variableName] = leftInt * rightInt;
+                } else {
+                    cout << "RUNTIME ERROR: line " << lineNumber << endl;
+                    exit(1);
+                }
+
+            }
+        } else {
+            cout << "RUNTIME ERROR: line " << lineNumber << endl;
+            exit(1);
+        }
 }
 
 void initialize(string first, string second, string third, string fourth, unordered_map<string, string> variables) {
@@ -86,6 +121,12 @@ bool checkVarName(string varName) {
         }
     }
     return true;
+}
+
+bool isInt(string input) {
+    std::regex pattern("-?(0|[1-9]\\d*)");
+
+    return regex_match(input, pattern);
 }
 
 int main (int argc, char *argv[]) {
