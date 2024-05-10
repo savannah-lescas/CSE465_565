@@ -90,10 +90,11 @@ void compoundAssignments(string variableName, string op, string right) {
     }
 }
 
-void stringCheck(vector<string> input) {
+void stringCheck(vector<string>& input) {
     string newString = "";
     int index;
-    if (!isInt(input[2])) {
+    auto search = variables.find(input[2]);
+    if (!isInt(input[2]) && search == variables.end()) {
         for (size_t i = 2; i < input.size(); i++) {
             if (input[i][0] == '"') {
                 index = i;
@@ -115,7 +116,6 @@ void stringCheck(vector<string> input) {
     } else {
         newString += input[2];
     }
-    //cout << newString << endl;
     input[2] = newString;
     input[3] = ";";
     while (input.size() > 4) {
@@ -124,9 +124,8 @@ void stringCheck(vector<string> input) {
 }
 
 
-void instruction(vector<string> input) {
+void instruction(vector<string>& input) {
     stringCheck(input);
-    /*
     if (input[1] == "=") {
         // this checks that the line has at least 4 parts and that the
         // last part is a semicolon
@@ -150,7 +149,6 @@ void instruction(vector<string> input) {
             compoundAssignments(input[0], input[1], getRidOfQuotes(input[2]));
         }
     }
-    */
 }
 
 // still need to implement loop
