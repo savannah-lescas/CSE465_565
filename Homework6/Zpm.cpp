@@ -160,8 +160,12 @@ int main (int argc, char *argv[]) {
     string line;
     vector<string> input;
     regex pattern("(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)\\s+");
-    while (getline(inputFile, line)) {
+    while (!inputFile.eof()) {
+        getline(inputFile, line);
         lineNumber++;
+        if (line.empty()) {
+            continue;
+        }
         input.clear();
         string s;
         stringstream ss(line);
