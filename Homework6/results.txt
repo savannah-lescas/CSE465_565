@@ -1,8 +1,8 @@
 result of: test1.zpm 
-A=12
+A1=12
 A223=12
-NUMBER=900000
-B=900000
+NUMBER=90000
+B=90000
 NUMBER=-34
 B=0
 number=-120
@@ -31,19 +31,20 @@ result of: test4.zpm
 num=110
 num=100
 num=-1000
-str="hello world!"
-str="hello world!hello world!"
+num=0
+str="Hello world!"
+str="Hello world!Hello world!"
 
 result of: test5.zpm
 A=20
 A=22
 str="ABABABAB"
 A=22
-str=--
+str="--"
 A=22
-str=--
+str="--"
 A=22
-str=--
+str="--"
 
 result of: test6.zpm
 RUNTIME ERROR: line 10

@@ -15,4 +15,4 @@ PRINT result ;
 PRINT s ;
 
 
-num *= s ;
+N *= s ;

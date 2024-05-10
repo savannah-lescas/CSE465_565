@@ -90,11 +90,48 @@ void compoundAssignments(string variableName, string op, string right) {
     }
 }
 
+void stringCheck(vector<string> input) {
+    string newString = "";
+    int index;
+    if (!isInt(input[2])) {
+        for (size_t i = 2; i < input.size(); i++) {
+            if (input[i][0] == '"') {
+                index = i;
+                newString += input[i] + " ";
+                break;
+            }
+        }
+        for (size_t i = index + 1; i < input.size(); i++) {
+            if (input[i] == ";") {
+                break;
+            } else if (!(input[i].back() == '"')) {
+                newString += input[i] + " ";
+                continue;
+            } else {
+                newString += input[i];
+                break;
+            }
+        }
+    } else {
+        newString += input[2];
+    }
+    //cout << newString << endl;
+    input[2] = newString;
+    input[3] = ";";
+    while (input.size() > 4) {
+        input.pop_back();
+    }   
+}
+
 
 void instruction(vector<string> input) {
+    stringCheck(input);
+    /*
     if (input[1] == "=") {
-        if (input.size() < 4 || input[2] == ";") {
-            cout << "RUNTIME ERROR: line " << lineNumber << endl;
+        // this checks that the line has at least 4 parts and that the
+        // last part is a semicolon
+        if (input.size() < 4 || !(input[input.size() - 1] == ";")) {
+            cout << "first check RUNTIME ERROR: line " << lineNumber << endl;
             exit(1);
         } else {
             if (checkVarName(input[0])) {
@@ -113,6 +150,7 @@ void instruction(vector<string> input) {
             compoundAssignments(input[0], input[1], getRidOfQuotes(input[2]));
         }
     }
+    */
 }
 
 // still need to implement loop
@@ -143,10 +181,10 @@ int main (int argc, char *argv[]) {
         cout << "Usage: ./Zpm filename.zpm" << endl;
         exit(1);
     }
-    string extension = ".zpm";
+
+    regex regex(".*\\.zpm");
     // making sure file ends with ".zpm"
-    // compare code from geeksforgeeks.org
-    if (filename.compare(filename.size() - extension.size(), extension.size(), extension) != 0) {
+    if (!regex_match(filename, regex)) {
         cout << "File needs to have .zpm extension" << endl;
         exit(1);
     }
@@ -159,7 +197,6 @@ int main (int argc, char *argv[]) {
 
     string line;
     vector<string> input;
-    regex pattern("(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)\\s+");
     while (!inputFile.eof()) {
         getline(inputFile, line);
         lineNumber++;
@@ -172,6 +209,11 @@ int main (int argc, char *argv[]) {
         while (getline(ss, s, ' ')) {
             input.push_back(s);
         }
+
+        /*
+        for (auto x : input) {
+            cout << x << endl;
+        }*/
 
         doAssignments(input);
     }
