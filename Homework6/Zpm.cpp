@@ -73,11 +73,14 @@ void compoundAssignments(string variableName, string op, string right) {
             int leftInt = stoi(left);
             int rightInt = stoi(right);
             if (op == "+=") {
-                variables[variableName] = leftInt + rightInt;
+                string total = to_string(leftInt + rightInt);
+                variables[variableName] = total;
             } else if (op == "-=") {
-                variables[variableName] = leftInt - rightInt;
+                string total = to_string(leftInt - rightInt);
+                variables[variableName] = total;
             } else if (op == "*=") {
-                variables[variableName] = leftInt * rightInt;
+                string total = to_string(leftInt * rightInt);
+                variables[variableName] = total;
             } else {
                 cout << "RUNTIME ERROR: line " << lineNumber << endl;
                 exit(1);
@@ -144,9 +147,11 @@ void instruction(vector<string>& input) {
         auto search = variables.find(input[2]);
         if (search != variables.end()) {
             string value = search->second;
+            //cout << value << endl;
             compoundAssignments(input[0], input[1], value);
         } else {
-            compoundAssignments(input[0], input[1], getRidOfQuotes(input[2]));
+            //compoundAssignments(input[0], input[1], getRidOfQuotes(input[2]));
+            compoundAssignments(input[0], input[1], input[2]);
         }
     }
 }
