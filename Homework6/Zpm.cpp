@@ -136,10 +136,14 @@ void stringCheck(vector<string>& input) {
         newString += input[2];
     }
     input[2] = newString;
-    input[3] = ";";
-    while (input.size() > 4) {
-        input.pop_back();
-    }   
+    if (input.size() >= 4) {
+        input[3] = ";";
+        while (input.size() > 4) {
+            input.pop_back();
+        }   
+    } else {
+        input.push_back(";");
+    }
 }
 
 
@@ -165,32 +169,39 @@ void instruction(vector<string>& input) {
         if (search != variables.end()) {
             // get the value of the variable
             string value = search->second;
-            //cout << getRidOfQuotes(value) << endl;
-            //cout << value << "." << endl;
             compoundAssignments(input[0], input[1], getRidOfQuotes(value));
         } else {
-            //cout << getRidOfQuotes(input[2]) << endl;
             compoundAssignments(input[0], input[1], getRidOfQuotes(input[2]));
-            //compoundAssignments(input[0], input[1], input[2]);
         }
     }
 }
 
 void loop(vector<string> input) {
-    int iterations = stoi(input[1]);
+    int iterations;
+    auto search = variables.find(input[1]);
+    if (search != variables.end()){
+        iterations = stoi(search->second);
+    } else {
+        iterations = stoi(input[1]);
+    }
+
 
     vector<string> statements = {};
     string statement = "";
     for (int i = 2; i < input.size(); i++) {
         if (input[i] == "ENDFOR") {
             for (int j = 0; j < iterations; j++) {
-                std::istringstream iss(statement);
-                std::vector<std::string> instruction;
-                std::string token;
-                while (iss >> token) {
-                    instruction.push_back(token);
+                //cout << "in j" << endl;
+                for (int k = 0; k < statements.size(); k++) {
+                    //cout << statements[k] << endl;
+                    vector<string> instruction;
+                    string s;
+                    stringstream ss(statements[k]); // not always going to be statements at 0!!
+                    while (getline(ss, s, ' ')) {
+                        instruction.push_back(s);
+                    }
+                    doAssignments(instruction);
                 }
-                doAssignments(instruction);
             }
         } else if (input[i] != ";") {
             statement += input[i] + " ";
@@ -252,8 +263,6 @@ int main (int argc, char *argv[]) {
         input.clear();
         string s;
         stringstream ss(line);
-        // this is affecting test 4 because we are trying to assign a variable 
-        // to a space
         while (getline(ss, s, ' ')) {
             input.push_back(s);
         }
