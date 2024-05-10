@@ -8,6 +8,7 @@
 #include <regex>
 
 using namespace std;
+void doAssignments(vector<string> input);
 
 unordered_map<string, string> variables;
 int lineNumber = 0;
@@ -60,10 +61,10 @@ void initialize(string first, string second, string third, string fourth) {
 void compoundAssignments(string variableName, string op, string right) {
     auto search = variables.find(variableName);
     if (search != variables.end()) {
-        string left = search->second;
+        string left = getRidOfQuotes(search->second);
         if (!isInt(left) && !isInt(right)) {
             if (op == "+=") {
-                variables[variableName] = left + right;
+                variables[variableName] = '"' + left + right + '"';
             }
         } else if (!isInt(left) && isInt(right)
             || isInt(left) && !isInt(right)) {
@@ -98,10 +99,25 @@ void stringCheck(vector<string>& input) {
     int index;
     auto search = variables.find(input[2]);
     if (!isInt(input[2]) && search == variables.end()) {
+        // a condition that checks if two elements from the input vector
+        // next to each other are both quotes, if they are then that
+        // means the variable was meant to be assigned as a space
+        if (input[2][0] == '"' && input[3][0] == '"') {
+            newString += " ";
+        }
         for (size_t i = 2; i < input.size(); i++) {
-            if (input[i][0] == '"') {
+            // if it starts with a quote and does not end with 
+            // a quote then it is part of a longer string
+            if (input[i][0] == '"' && input[i].back() != '"') {
                 index = i;
+                // so add it to the new string and add a space
                 newString += input[i] + " ";
+                break;
+            } else {
+                // otherwise, the string is just one word and the 
+                // space isn't necessary
+                index = i;
+                newString += input[i] + "";
                 break;
             }
         }
@@ -144,25 +160,52 @@ void instruction(vector<string>& input) {
             }
         }
     } else {
+        // if compounding a variable with an existing variable
         auto search = variables.find(input[2]);
         if (search != variables.end()) {
+            // get the value of the variable
             string value = search->second;
-            //cout << value << endl;
-            compoundAssignments(input[0], input[1], value);
+            //cout << getRidOfQuotes(value) << endl;
+            //cout << value << "." << endl;
+            compoundAssignments(input[0], input[1], getRidOfQuotes(value));
         } else {
-            //compoundAssignments(input[0], input[1], getRidOfQuotes(input[2]));
-            compoundAssignments(input[0], input[1], input[2]);
+            //cout << getRidOfQuotes(input[2]) << endl;
+            compoundAssignments(input[0], input[1], getRidOfQuotes(input[2]));
+            //compoundAssignments(input[0], input[1], input[2]);
         }
     }
 }
 
-// still need to implement loop
+void loop(vector<string> input) {
+    int iterations = stoi(input[1]);
+
+    vector<string> statements = {};
+    string statement = "";
+    for (int i = 2; i < input.size(); i++) {
+        if (input[i] == "ENDFOR") {
+            for (int j = 0; j < iterations; j++) {
+                std::istringstream iss(statement);
+                std::vector<std::string> instruction;
+                std::string token;
+                while (iss >> token) {
+                    instruction.push_back(token);
+                }
+                doAssignments(instruction);
+            }
+        } else if (input[i] != ";") {
+            statement += input[i] + " ";
+        } else {
+            statements.push_back(statement);
+            statement = "";
+        }
+    }
+}
 
 void doAssignments(vector<string> input) {
     string firstInstruction = input[0];
 
     if (firstInstruction == "FOR") {
-        //loop(input);
+        loop(input);
     } else if (firstInstruction == "PRINT") {
         print(input[1]);
     } else {
@@ -209,6 +252,8 @@ int main (int argc, char *argv[]) {
         input.clear();
         string s;
         stringstream ss(line);
+        // this is affecting test 4 because we are trying to assign a variable 
+        // to a space
         while (getline(ss, s, ' ')) {
             input.push_back(s);
         }
