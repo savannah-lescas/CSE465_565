@@ -54,7 +54,6 @@ void initialize(string first, string second, string third, string fourth) {
         variables[first] = value;
     } else {
         variables[first] = third;
-        // idk maybe add some stuff here
     }
 }
 
@@ -102,8 +101,10 @@ void stringCheck(vector<string>& input) {
         // a condition that checks if two elements from the input vector
         // next to each other are both quotes, if they are then that
         // means the variable was meant to be assigned as a space
-        if (input[2][0] == '"' && input[3][0] == '"') {
-            newString += " ";
+        if (input.size() > 3) {
+            if (input[2][0] == '"' && input[3][0] == '"') {
+                newString += " ";
+            }
         }
         for (size_t i = 2; i < input.size(); i++) {
             // if it starts with a quote and does not end with 
@@ -117,6 +118,7 @@ void stringCheck(vector<string>& input) {
                 // otherwise, the string is just one word and the 
                 // space isn't necessary
                 index = i;
+                //cout << "input[i]: " << input[i] << endl;
                 newString += input[i] + "";
                 break;
             }
@@ -191,12 +193,10 @@ void loop(vector<string> input) {
     for (int i = 2; i < input.size(); i++) {
         if (input[i] == "ENDFOR") {
             for (int j = 0; j < iterations; j++) {
-                //cout << "in j" << endl;
                 for (int k = 0; k < statements.size(); k++) {
-                    //cout << statements[k] << endl;
                     vector<string> instruction;
                     string s;
-                    stringstream ss(statements[k]); // not always going to be statements at 0!!
+                    stringstream ss(statements[k]);
                     while (getline(ss, s, ' ')) {
                         instruction.push_back(s);
                     }
@@ -266,11 +266,6 @@ int main (int argc, char *argv[]) {
         while (getline(ss, s, ' ')) {
             input.push_back(s);
         }
-
-        /*
-        for (auto x : input) {
-            cout << x << endl;
-        }*/
 
         doAssignments(input);
     }
